@@ -1,0 +1,44 @@
+{
+  "development": {
+    "username": "root",
+    "password": null,
+    "database": "shopQuanAoDB",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "port": 3306,
+    "logging": true,
+    "define": {
+      "timestamps": true,
+      "underscored": false,
+      "freezeTableName": true
+    }
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "shopQuanAoDB_test",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "port": 3306,
+    "logging": false,
+    "define": {
+      "timestamps": true,
+      "underscored": false,
+      "freezeTableName": true
+    }
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "shopQuanAoDB",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "port": 3306,
+    "logging": false,
+    "define": {
+      "timestamps": true,
+      "underscored": false,
+      "freezeTableName": true
+    }
+  }
+} 
