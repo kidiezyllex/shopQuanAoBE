@@ -5,9 +5,9 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'street-sneaker BE API',
+      title: 'shopquanao BE API',
       version: '1.0.0',
-      description: 'API documentation for street-sneaker BE',
+      description: 'API documentation for shopquanao BE',
       contact: {
         name: 'API Support',
         email: 'support@example.com',
@@ -15,7 +15,7 @@ const options = {
     },
     servers: [
       {
-        url: 'https://street-sneaker-be.onrender.com/api',
+        url: 'https://shopquanao-be.onrender.com/api',
         description: 'Production API Server',
       },
       {
@@ -90,14 +90,14 @@ export const setupSwagger = (app) => {
   app.get('/api-docs', swaggerUi.setup(specs, {
     explorer: true,
     customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'street-sneaker BE API Documentation',
+    customSiteTitle: 'shopquanao BE API Documentation',
   }));
   
   app.use('/api-docs/', swaggerUi.serve);
   app.get('/api-docs/', swaggerUi.setup(specs, {
     explorer: true,
     customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'street-sneaker BE API Documentation',
+    customSiteTitle: 'shopquanao BE API Documentation',
   }));
 
   app.get('/swagger.json', (req, res) => {

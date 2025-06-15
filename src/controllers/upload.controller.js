@@ -26,7 +26,7 @@ export const uploadImage = async (req, res) => {
     const fileExtension = originalName.split('.').pop();
     const uniqueFileName = `${uuidv4()}.${fileExtension}`;
 
-    const folderPath = `street-sneaker/${req.account.id}/images`;
+    const folderPath = `shopquanao/${req.account.id}/images`;
 
     const imageData = await uploadFileToCloudinary(
       req.file.buffer,

@@ -43,7 +43,6 @@ const router = express.Router();
  *                       example: https://res.cloudinary.com/example/image/upload/example.jpg
  *                     publicId:
  *                       type: string
- *                       example: street-sneaker/account-id/images/example
  *       400:
  *         description: Dữ liệu không hợp lệ
  *       401:
