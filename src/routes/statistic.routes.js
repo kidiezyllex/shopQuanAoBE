@@ -8,7 +8,8 @@ import {
   getRevenueReport,
   getTopProducts,
   generateDailyStatistic,
-  getAnalytics
+  getAnalytics,
+  getDashboardStats
 } from '../controllers/statistic.controller.js';
 import { authenticate } from '../middlewares/auth.middleware.js';
 import { authorizeAdmin } from '../middlewares/role.middleware.js';
