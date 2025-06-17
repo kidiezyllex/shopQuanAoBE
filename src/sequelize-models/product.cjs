@@ -84,8 +84,24 @@ module.exports = (sequelize, DataTypes) => {
     hooks: {
       beforeCreate: async (product, options) => {
         if (!product.code) {
-          const count = await Product.count();
-          product.code = `PRD${(count + 1).toString().padStart(6, '0')}`;
+          // Find the highest existing product number
+          const lastProduct = await Product.findOne({
+            attributes: ['code'],
+            where: {
+              code: {
+                [sequelize.Sequelize.Op.like]: 'PRD%'
+              }
+            },
+            order: [['code', 'DESC']]
+          });
+          
+          let nextNumber = 1;
+          if (lastProduct && lastProduct.code) {
+            const lastNumber = parseInt(lastProduct.code.replace('PRD', ''));
+            nextNumber = lastNumber + 1;
+          }
+          
+          product.code = `PRD${nextNumber.toString().padStart(6, '0')}`;
         }
       }
     }

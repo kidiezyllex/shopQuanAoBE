@@ -27,14 +27,14 @@ export const createProduct = async (req, res) => {
 
     // Tìm brand, category, material
     const [brandDoc, categoryDoc, materialDoc] = await Promise.all([
-      Number.isInteger(brand) 
-        ? db.Brand.findByPk(brand)
+      (!isNaN(brand) && !isNaN(parseInt(brand)))
+        ? db.Brand.findByPk(parseInt(brand))
         : db.Brand.findOne({ where: { name: brand } }),
-      Number.isInteger(category)
-        ? db.Category.findByPk(category)
+      (!isNaN(category) && !isNaN(parseInt(category)))
+        ? db.Category.findByPk(parseInt(category))
         : db.Category.findOne({ where: { name: category } }),
-      Number.isInteger(material)
-        ? db.Material.findByPk(material)
+      (!isNaN(material) && !isNaN(parseInt(material)))
+        ? db.Material.findByPk(parseInt(material))
         : db.Material.findOne({ where: { name: material } })
     ]);
 
@@ -78,10 +78,20 @@ export const createProduct = async (req, res) => {
         });
       }
 
+      // Validate stock value
+      const validatedStockValue = parseInt(variant.stock) || parseInt(variant.quantity) || 0;
+      if (validatedStockValue < 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Số lượng tồn kho không được âm',
+          variant
+        });
+      }
+
       let color, size;
       
-      if (Number.isInteger(variant.colorId)) {
-        color = await db.Color.findByPk(variant.colorId);
+      if (!isNaN(variant.colorId) && !isNaN(parseInt(variant.colorId))) {
+        color = await db.Color.findByPk(parseInt(variant.colorId));
       } else {
         color = await db.Color.findOne({ where: { code: variant.colorId } });
       }
@@ -93,8 +103,8 @@ export const createProduct = async (req, res) => {
         });
       }
       
-      if (Number.isInteger(variant.sizeId)) {
-        size = await db.Size.findByPk(variant.sizeId);
+      if (!isNaN(variant.sizeId) && !isNaN(parseInt(variant.sizeId))) {
+        size = await db.Size.findByPk(parseInt(variant.sizeId));
       } else {
         const sizeValue = parseInt(variant.sizeId.toString().replace(/\D/g, ''));
         size = await db.Size.findOne({ where: { value: sizeValue } });
@@ -112,16 +122,15 @@ export const createProduct = async (req, res) => {
         productId: newProduct.id,
         colorId: color.id,
         sizeId: size.id,
-        price: variant.price,
-        quantity: variant.quantity || 0,
-        status: 'HOAT_DONG'
+        price: parseFloat(variant.price),
+        stock: validatedStockValue
       });
 
       // Tạo ProductVariantImages nếu có
       if (variant.images && variant.images.length > 0) {
         const imagePromises = variant.images.map(imageUrl => 
           db.ProductVariantImage.create({
-            productVariantId: productVariant.id,
+            variantId: productVariant.id,
             imageUrl
           })
         );
@@ -153,10 +162,37 @@ export const createProduct = async (req, res) => {
       data: productWithDetails
     });
   } catch (error) {
+    console.error('Product creation error:', error);
+    
+    // If it's a Sequelize validation error, provide more details
+    if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(400).json({
+        success: false,
+        message: 'Lỗi validation dữ liệu',
+        error: error.message,
+        details: error.errors ? error.errors.map(err => ({
+          field: err.path,
+          message: err.message,
+          value: err.value
+        })) : null
+      });
+    }
+
+    // Handle foreign key constraint errors
+    if (error.name === 'SequelizeForeignKeyConstraintError') {
+      return res.status(400).json({
+        success: false,
+        message: 'Lỗi ràng buộc khóa ngoại - Kiểm tra lại ID của brand, category, material, color hoặc size',
+        error: error.message,
+        field: error.index || error.table
+      });
+    }
+
     return res.status(500).json({
       success: false,
       message: 'Đã xảy ra lỗi khi tạo sản phẩm',
-      error: error.message
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 };
@@ -372,17 +408,23 @@ export const updateProduct = async (req, res) => {
     let categoryId = category;
     let materialId = material;
 
-    if (brand && !Number.isInteger(brand)) {
+    if (brand && (isNaN(brand) || isNaN(parseInt(brand)))) {
       const brandDoc = await db.Brand.findOne({ where: { name: brand } });
       if (brandDoc) brandId = brandDoc.id;
+    } else if (brand) {
+      brandId = parseInt(brand);
     }
-    if (category && !Number.isInteger(category)) {
+    if (category && (isNaN(category) || isNaN(parseInt(category)))) {
       const categoryDoc = await db.Category.findOne({ where: { name: category } });
       if (categoryDoc) categoryId = categoryDoc.id;
+    } else if (category) {
+      categoryId = parseInt(category);
     }
-    if (material && !Number.isInteger(material)) {
+    if (material && (isNaN(material) || isNaN(parseInt(material)))) {
       const materialDoc = await db.Material.findOne({ where: { name: material } });
       if (materialDoc) materialId = materialDoc.id;
+    } else if (material) {
+      materialId = parseInt(material);
     }
 
     const product = await db.Product.findByPk(id);
@@ -416,7 +458,7 @@ export const updateProduct = async (req, res) => {
           colorId: variant.colorId,
           sizeId: variant.sizeId,
           price: variant.price,
-          quantity: variant.quantity || 0,
+          quantity: variant.quantity || variant.stock || 0,
           status: 'HOAT_DONG'
         });
 
@@ -424,7 +466,7 @@ export const updateProduct = async (req, res) => {
         if (variant.images && variant.images.length > 0) {
           const imagePromises = variant.images.map(imageUrl => 
             db.ProductVariantImage.create({
-              productVariantId: productVariant.id,
+              variantId: productVariant.id,
               imageUrl
             })
           );
@@ -794,13 +836,13 @@ export const updateProductImages = async (req, res) => {
     
     // Xóa tất cả hình ảnh cũ của variant
     await db.ProductVariantImage.destroy({
-      where: { productVariantId: variantId }
+      where: { variantId: variantId }
     });
     
     // Thêm hình ảnh mới
     const imagePromises = images.map(imageUrl => 
       db.ProductVariantImage.create({
-        productVariantId: variantId,
+        variantId: variantId,
         imageUrl
       })
     );
