@@ -129,39 +129,37 @@ export const getTopProducts = async (req, res) => {
   try {
     const { startDate, endDate, limit = 10 } = req.query;
     
-    let dateFilter = {};
+    let dateCondition = '';
+    let replacements = {};
+    
     if (startDate && endDate) {
-      dateFilter.createdAt = {
-        [Op.between]: [new Date(startDate), new Date(endDate)]
-      };
+      dateCondition = `AND o.createdAt BETWEEN :startDate AND :endDate`;
+      replacements.startDate = new Date(startDate);
+      replacements.endDate = new Date(endDate);
     }
     
-    const topProducts = await db.OrderItem.findAll({
-      include: [
-        {
-          model: db.Order,
-          as: 'order',
-          where: {
-            ...dateFilter,
-            orderStatus: 'HOAN_THANH'
-          },
-          attributes: []
-        },
-        {
-          model: db.Product,
-          as: 'product',
-          attributes: ['id', 'name', 'code', 'price']
-        }
-      ],
-      attributes: [
-        'productId',
-        [db.sequelize.fn('SUM', db.sequelize.col('quantity')), 'totalSold'],
-        [db.sequelize.fn('SUM', db.sequelize.literal('quantity * price')), 'totalRevenue']
-      ],
-      group: ['productId'],
-      order: [[db.sequelize.fn('SUM', db.sequelize.col('quantity')), 'DESC']],
-      limit: parseInt(limit),
-      raw: false
+    replacements.limit = parseInt(limit);
+    
+    const query = `
+      SELECT 
+        p.id as productId,
+        p.name as productName,
+        p.code as productCode,
+        SUM(oi.quantity) as totalSold,
+        SUM(oi.quantity * oi.price) as totalRevenue
+      FROM order_items oi
+      INNER JOIN orders o ON oi.orderId = o.id
+      INNER JOIN product_variants pv ON oi.variantId = pv.id
+      INNER JOIN products p ON pv.productId = p.id
+      WHERE o.orderStatus = 'HOAN_THANH' ${dateCondition}
+      GROUP BY p.id, p.name, p.code
+      ORDER BY totalSold DESC
+      LIMIT :limit
+    `;
+    
+    const topProducts = await db.sequelize.query(query, {
+      type: db.sequelize.QueryTypes.SELECT,
+      replacements
     });
     
     return res.status(200).json({
