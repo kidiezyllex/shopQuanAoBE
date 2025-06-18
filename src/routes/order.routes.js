@@ -11,7 +11,7 @@ import {
   createPOSOrder
 } from '../controllers/order.controller.js';
 import { authenticate } from '../middlewares/auth.middleware.js';
-import { authorizeAdmin } from '../middlewares/role.middleware.js';
+import { authorizeAdmin, authorizeStaffOrAdmin } from '../middlewares/role.middleware.js';
 
 const router = express.Router();
 
@@ -223,7 +223,7 @@ router.post('/', createOrder);
  *       500:
  *         description: Lỗi máy chủ
  */
-router.post('/pos', authenticate, authorizeAdmin, createPOSOrder);
+router.post('/pos', authenticate, authorizeStaffOrAdmin, createPOSOrder);
 
 /**
  * @swagger

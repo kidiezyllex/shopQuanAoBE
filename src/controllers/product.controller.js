@@ -18,10 +18,84 @@ export const createProduct = async (req, res) => {
       variants 
     } = req.body;
 
-    if (!name || !brand || !category || !material || !description || !weight || !variants || variants.length === 0) {
+    // Detailed validation with specific error messages
+    const validationErrors = [];
+    
+    if (!name || typeof name !== 'string' || name.trim() === '') {
+      validationErrors.push('Tên sản phẩm không được để trống');
+    }
+    
+    if (!brand) {
+      validationErrors.push('Thương hiệu không được để trống');
+    }
+    
+    if (!category) {
+      validationErrors.push('Danh mục không được để trống');
+    }
+    
+    if (!material) {
+      validationErrors.push('Chất liệu không được để trống');
+    }
+    
+    if (!description || typeof description !== 'string' || description.trim() === '') {
+      validationErrors.push('Mô tả sản phẩm không được để trống');
+    }
+    
+    if (weight === undefined || weight === null || isNaN(Number(weight)) || Number(weight) < 0) {
+      validationErrors.push('Trọng lượng phải là số và không được âm');
+    }
+    
+    if (!variants || !Array.isArray(variants) || variants.length === 0) {
+      validationErrors.push('Sản phẩm phải có ít nhất một biến thể');
+    }
+    
+    // Validate each variant in detail
+    if (variants && Array.isArray(variants)) {
+      variants.forEach((variant, index) => {
+        const variantErrors = [];
+        
+        if (!variant.colorId) {
+          variantErrors.push('Thiếu colorId');
+        }
+        
+        if (!variant.sizeId) {
+          variantErrors.push('Thiếu sizeId');
+        }
+        
+        if (!variant.price || isNaN(Number(variant.price)) || Number(variant.price) <= 0) {
+          variantErrors.push('Giá phải là số dương');
+        }
+        
+        if (variant.stock !== undefined && variant.stock !== null) {
+          if (isNaN(Number(variant.stock)) || Number(variant.stock) < 0) {
+            variantErrors.push('Số lượng tồn kho phải là số không âm');
+          }
+        }
+        
+        if (variant.images && !Array.isArray(variant.images)) {
+          variantErrors.push('Images phải là mảng');
+        }
+        
+        if (variantErrors.length > 0) {
+          validationErrors.push(`Biến thể ${index + 1}: ${variantErrors.join(', ')}`);
+        }
+      });
+    }
+    
+    if (validationErrors.length > 0) {
       return res.status(400).json({
         success: false,
-        message: 'Vui lòng cung cấp đầy đủ thông tin sản phẩm'
+        message: 'Dữ liệu đầu vào không hợp lệ',
+        errors: validationErrors,
+        receivedData: {
+          name: name || 'undefined',
+          brand: brand || 'undefined',
+          category: category || 'undefined',
+          material: material || 'undefined',
+          description: description || 'undefined',
+          weight: weight !== undefined ? weight : 'undefined',
+          variantsCount: variants ? variants.length : 0
+        }
       });
     }
 
@@ -69,12 +143,29 @@ export const createProduct = async (req, res) => {
     });
 
     // Xử lý variants
-    for (const variant of variants) {
-      if (!variant.colorId || !variant.sizeId || !variant.price || variant.price <= 0) {
+    for (let i = 0; i < variants.length; i++) {
+      const variant = variants[i];
+      const variantValidationErrors = [];
+      
+      if (!variant.colorId) {
+        variantValidationErrors.push('Thiếu colorId');
+      }
+      
+      if (!variant.sizeId) {
+        variantValidationErrors.push('Thiếu sizeId');
+      }
+      
+      if (!variant.price || isNaN(Number(variant.price)) || Number(variant.price) <= 0) {
+        variantValidationErrors.push('Giá phải là số dương');
+      }
+      
+      if (variantValidationErrors.length > 0) {
         return res.status(400).json({
           success: false,
-          message: 'Mỗi biến thể cần có màu sắc, kích cỡ và giá hợp lệ',
-          variant
+          message: `Lỗi ở biến thể thứ ${i + 1}`,
+          errors: variantValidationErrors,
+          variantIndex: i,
+          variant: variant
         });
       }
 
@@ -83,8 +174,11 @@ export const createProduct = async (req, res) => {
       if (validatedStockValue < 0) {
         return res.status(400).json({
           success: false,
-          message: 'Số lượng tồn kho không được âm',
-          variant
+          message: `Số lượng tồn kho không được âm ở biến thể thứ ${i + 1}`,
+          variantIndex: i,
+          field: 'stock',
+          receivedValue: variant.stock || variant.quantity,
+          validatedValue: validatedStockValue
         });
       }
 
@@ -99,7 +193,10 @@ export const createProduct = async (req, res) => {
       if (!color) {
         return res.status(404).json({
           success: false,
-          message: `Không tìm thấy màu sắc: ${variant.colorId}`
+          message: `Không tìm thấy màu sắc với ID: ${variant.colorId}`,
+          variantIndex: i,
+          field: 'colorId',
+          receivedValue: variant.colorId
         });
       }
       
@@ -113,7 +210,10 @@ export const createProduct = async (req, res) => {
       if (!size) {
         return res.status(404).json({
           success: false,
-          message: `Không tìm thấy kích cỡ: ${variant.sizeId}`
+          message: `Không tìm thấy kích cỡ với ID: ${variant.sizeId}`,
+          variantIndex: i,
+          field: 'sizeId',
+          receivedValue: variant.sizeId
         });
       }
 

@@ -8,34 +8,37 @@ import { Op } from 'sequelize';
  */
 const updateProductStock = async (items, multiplier = 1) => {
   for (const item of items) {
-    if (!Number.isInteger(parseInt(item.productId)) || parseInt(item.productId) <= 0) {
-      continue; // Bỏ qua item không hợp lệ
+    let variantId;
+    
+    // Handle different item structures
+    if (item.variantId) {
+      variantId = item.variantId;
+    } else if (item.productVariantId) {
+      variantId = item.productVariantId;
+    } else {
+      continue; // Skip if no variant ID found
     }
 
-    const product = await db.Product.findByPk(item.productId);
-    if (!product) {
-      continue; // Bỏ qua nếu không tìm thấy sản phẩm
+    if (!Number.isInteger(parseInt(variantId)) || parseInt(variantId) <= 0) {
+      continue; // Skip invalid variant ID
     }
 
-    // Tìm variant theo productVariantId
-    const variant = await db.ProductVariant.findOne({
-      where: {
-        id: item.productVariantId,
-        productId: item.productId
-      }
-    });
+    // Find variant by variantId
+    const variant = await db.ProductVariant.findByPk(variantId);
 
     if (variant) {
+      // Use the correct stock field name
+      const stockField = variant.stock !== undefined ? 'stock' : 'quantity';
+      const currentStock = variant[stockField] || 0;
+      
       if (multiplier === 1) {
-        // Trừ stock (khi hoàn thành đơn hàng)
-        if (variant.quantity >= item.quantity) {
-          variant.quantity -= item.quantity;
-          await variant.save();
+        // Subtract stock (when completing order)
+        if (currentStock >= item.quantity) {
+          await variant.update({ [stockField]: currentStock - item.quantity });
         }
       } else {
-        // Cộng stock (khi hủy đơn hàng hoặc trả hàng)
-        variant.quantity += item.quantity;
-        await variant.save();
+        // Add stock (when canceling order or returns)
+        await variant.update({ [stockField]: currentStock + item.quantity });
       }
     }
   }
@@ -108,10 +111,10 @@ export const createOrder = async (req, res) => {
       }
 
       // Kiểm tra tồn kho
-      if (variant.quantity < item.quantity) {
+      if (variant.stock < item.quantity) {
         return res.status(400).json({
           success: false,
-          message: `Không đủ tồn kho cho sản phẩm ${product.name}. Tồn kho hiện tại: ${variant.quantity}, yêu cầu: ${item.quantity}`
+          message: `Không đủ tồn kho cho sản phẩm ${product.name}. Tồn kho hiện tại: ${variant.stock}, yêu cầu: ${item.quantity}`
         });
       }
     }
@@ -135,8 +138,7 @@ export const createOrder = async (req, res) => {
     for (const item of items) {
       const orderItem = await db.OrderItem.create({
         orderId: newOrder.id,
-        productId: item.productId,
-        productVariantId: item.productVariantId,
+        variantId: item.productVariantId,
         quantity: item.quantity,
         price: item.price
       });
@@ -162,24 +164,24 @@ export const createOrder = async (req, res) => {
         {
           model: db.Voucher,
           as: 'voucher',
-          attributes: ['id', 'code', 'name', 'discountType', 'discountValue']
+          attributes: ['id', 'code', 'name', 'type', 'value']
         },
         {
           model: db.OrderItem,
           as: 'items',
           include: [
             {
-              model: db.Product,
-              as: 'product',
-              attributes: ['id', 'code', 'name'],
-              include: [
-                { model: db.Brand, as: 'brand', attributes: ['id', 'name'] }
-              ]
-            },
-            {
               model: db.ProductVariant,
               as: 'productVariant',
               include: [
+                {
+                  model: db.Product,
+                  as: 'product',
+                  attributes: ['id', 'code', 'name'],
+                  include: [
+                    { model: db.Brand, as: 'brand', attributes: ['id', 'name'] }
+                  ]
+                },
                 { model: db.Color, as: 'color', attributes: ['id', 'name', 'code'] },
                 { model: db.Size, as: 'size', attributes: ['id', 'value'] }
               ]
@@ -266,21 +268,21 @@ export const getOrders = async (req, res) => {
         {
           model: db.Voucher,
           as: 'voucher',
-          attributes: ['id', 'code', 'name', 'discountType', 'discountValue']
+          attributes: ['id', 'code', 'name', 'type', 'value']
         },
         {
           model: db.OrderItem,
           as: 'items',
           include: [
             {
-              model: db.Product,
-              as: 'product',
-              attributes: ['id', 'code', 'name']
-            },
-            {
               model: db.ProductVariant,
               as: 'productVariant',
               include: [
+                {
+                  model: db.Product,
+                  as: 'product',
+                  attributes: ['id', 'code', 'name']
+                },
                 { model: db.Color, as: 'color', attributes: ['id', 'name', 'code'] },
                 { model: db.Size, as: 'size', attributes: ['id', 'value'] }
               ]
@@ -346,27 +348,26 @@ export const getOrderById = async (req, res) => {
         {
           model: db.Voucher,
           as: 'voucher',
-          attributes: ['id', 'code', 'name', 'discountType', 'discountValue']
+          attributes: ['id', 'code', 'name', 'type', 'value']
         },
         {
           model: db.OrderItem,
           as: 'items',
           include: [
             {
-              model: db.Product,
-              as: 'product',
-              attributes: ['id', 'code', 'name'],
-              include: [
-                { model: db.Brand, as: 'brand', attributes: ['id', 'name'] }
-              ]
-            },
-            {
               model: db.ProductVariant,
               as: 'productVariant',
               include: [
+                {
+                  model: db.Product,
+                  as: 'product',
+                  attributes: ['id', 'code', 'name'],
+                  include: [
+                    { model: db.Brand, as: 'brand', attributes: ['id', 'name'] }
+                  ]
+                },
                 { model: db.Color, as: 'color', attributes: ['id', 'name', 'code'] },
-                { model: db.Size, as: 'size', attributes: ['id', 'value'] },
-                { model: db.ProductVariantImage, as: 'images', attributes: ['id', 'imageUrl'] }
+                { model: db.Size, as: 'size', attributes: ['id', 'value'] }
               ]
             }
           ]
@@ -383,13 +384,13 @@ export const getOrderById = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Lấy thông tin đơn hàng thành công',
+      message: 'Lấy chi tiết đơn hàng thành công',
       data: order
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: 'Đã xảy ra lỗi khi lấy thông tin đơn hàng',
+      message: 'Đã xảy ra lỗi khi lấy chi tiết đơn hàng',
       error: error.message
     });
   }
@@ -444,21 +445,21 @@ export const updateOrder = async (req, res) => {
         {
           model: db.Voucher,
           as: 'voucher',
-          attributes: ['id', 'code', 'name', 'discountType', 'discountValue']
+          attributes: ['id', 'code', 'name', 'type', 'value']
         },
         {
           model: db.OrderItem,
           as: 'items',
           include: [
             {
-              model: db.Product,
-              as: 'product',
-              attributes: ['id', 'code', 'name']
-            },
-            {
               model: db.ProductVariant,
               as: 'productVariant',
               include: [
+                {
+                  model: db.Product,
+                  as: 'product',
+                  attributes: ['id', 'code', 'name']
+                },
                 { model: db.Color, as: 'color', attributes: ['id', 'name', 'code'] },
                 { model: db.Size, as: 'size', attributes: ['id', 'value'] }
               ]
@@ -530,8 +531,7 @@ export const cancelOrder = async (req, res) => {
 
     // Hoàn trả stock
     const items = order.items.map(item => ({
-      productId: item.productId,
-      productVariantId: item.productVariantId,
+      variantId: item.variantId,
       quantity: item.quantity
     }));
     await updateProductStock(items, -1);
@@ -628,21 +628,21 @@ export const getMyOrders = async (req, res) => {
         {
           model: db.Voucher,
           as: 'voucher',
-          attributes: ['id', 'code', 'name', 'discountType', 'discountValue']
+          attributes: ['id', 'code', 'name', 'type', 'value']
         },
         {
           model: db.OrderItem,
           as: 'items',
           include: [
             {
-              model: db.Product,
-              as: 'product',
-              attributes: ['id', 'code', 'name']
-            },
-            {
               model: db.ProductVariant,
               as: 'productVariant',
               include: [
+                {
+                  model: db.Product,
+                  as: 'product',
+                  attributes: ['id', 'code', 'name']
+                },
                 { model: db.Color, as: 'color', attributes: ['id', 'name', 'code'] },
                 { model: db.Size, as: 'size', attributes: ['id', 'value'] },
                 { model: db.ProductVariantImage, as: 'images', attributes: ['id', 'imageUrl'] }
@@ -715,21 +715,21 @@ export const getOrdersByUserId = async (req, res) => {
         {
           model: db.Voucher,
           as: 'voucher',
-          attributes: ['id', 'code', 'name', 'discountType', 'discountValue']
+          attributes: ['id', 'code', 'name', 'type', 'value']
         },
         {
           model: db.OrderItem,
           as: 'items',
           include: [
             {
-              model: db.Product,
-              as: 'product',
-              attributes: ['id', 'code', 'name']
-            },
-            {
               model: db.ProductVariant,
               as: 'productVariant',
               include: [
+                {
+                  model: db.Product,
+                  as: 'product',
+                  attributes: ['id', 'code', 'name']
+                },
                 { model: db.Color, as: 'color', attributes: ['id', 'name', 'code'] },
                 { model: db.Size, as: 'size', attributes: ['id', 'value'] }
               ]
@@ -772,13 +772,18 @@ export const getOrdersByUserId = async (req, res) => {
 export const createPOSOrder = async (req, res) => {
   try {
     const { 
+      orderId,
+      customer,
       customerId, 
       items, 
       voucherId, 
+      voucher,
       subTotal, 
       discount, 
       total, 
-      paymentMethod 
+      shippingAddress,
+      paymentMethod,
+      orderStatus
     } = req.body;
 
     if (!items || !subTotal || !total || !paymentMethod) {
@@ -788,23 +793,118 @@ export const createPOSOrder = async (req, res) => {
       });
     }
 
-    // Kiểm tra customer nếu có
-    if (customerId) {
-      const customer = await db.Account.findByPk(customerId);
-      if (!customer) {
+    // Determine customer ID
+    let finalCustomerId = customerId;
+    
+    // If customer is provided as a string (name) and no customerId, create or find guest customer
+    if (customer && typeof customer === 'string' && !customerId) {
+      // Find or create a guest customer account
+      let guestCustomer = await db.Account.findOne({
+        where: { 
+          email: 'guest@pos.local',
+          role: 'CUSTOMER'
+        }
+      });
+      
+      if (!guestCustomer) {
+        guestCustomer = await db.Account.create({
+          fullName: 'Khách hàng tại quầy',
+          email: 'guest@pos.local',
+          phoneNumber: '0000000000',
+          password: 'defaultpassword',
+          role: 'CUSTOMER',
+          status: 'HOAT_DONG'
+        });
+      }
+      
+      finalCustomerId = guestCustomer.id;
+    } else if (customerId) {
+      // Validate customer exists
+      const customerRecord = await db.Account.findByPk(customerId);
+      if (!customerRecord) {
         return res.status(404).json({
           success: false,
           message: 'Không tìm thấy khách hàng'
         });
       }
+    } else {
+      // No customer provided, use default guest
+      let guestCustomer = await db.Account.findOne({
+        where: { 
+          email: 'guest@pos.local',
+          role: 'CUSTOMER'
+        }
+      });
+      
+      if (!guestCustomer) {
+        guestCustomer = await db.Account.create({
+          fullName: 'Khách hàng tại quầy',
+          email: 'guest@pos.local',
+          phoneNumber: '0000000000',
+          password: 'defaultpassword',
+          role: 'CUSTOMER',
+          status: 'HOAT_DONG'
+        });
+      }
+      
+      finalCustomerId = guestCustomer.id;
     }
 
-    // Kiểm tra và validate stock
+    // Process and validate items
+    const processedItems = [];
     for (const item of items) {
+      // Convert product ID to integer
+      const productId = parseInt(item.product);
+      if (!productId || productId <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: `ID sản phẩm không hợp lệ: ${item.product}`
+        });
+      }
+
+      let variantId = item.productVariantId || item.variantId;
+      
+      // If no variant ID provided, try to find variant by product, color, and size
+      if (!variantId && item.variant && item.variant.colorId && item.variant.sizeId) {
+        const variant = await db.ProductVariant.findOne({
+          where: {
+            productId: productId,
+            colorId: parseInt(item.variant.colorId),
+            sizeId: parseInt(item.variant.sizeId)
+          }
+        });
+        
+        if (variant) {
+          variantId = variant.id;
+        }
+      }
+      
+      // If still no variant ID and we have empty color/size IDs, try to find a default variant
+      if (!variantId && item.variant && (!item.variant.colorId || !item.variant.sizeId)) {
+        const variant = await db.ProductVariant.findOne({
+          where: {
+            productId: productId
+          },
+          limit: 1
+        });
+        
+        if (variant) {
+          variantId = variant.id;
+        }
+      }
+      
+      if (!variantId) {
+        return res.status(400).json({
+          success: false,
+          message: `Không thể xác định biến thể cho sản phẩm ${productId}`
+        });
+      }
+
+      // Validate variant exists and get stock info
       const variant = await db.ProductVariant.findOne({
         where: {
-          id: item.productVariantId,
-          productId: item.productId
+          id: variantId,
+          productId: productId
         }
       });
 
@@ -815,41 +915,88 @@ export const createPOSOrder = async (req, res) => {
         });
       }
 
-      if (variant.quantity < item.quantity) {
-        const product = await db.Product.findByPk(item.productId);
+      // Check stock (use 'stock' field from ProductVariant model)
+      const availableStock = variant.stock || variant.quantity || 0;
+      if (availableStock < item.quantity) {
+        const product = await db.Product.findByPk(productId);
         return res.status(400).json({
           success: false,
-          message: `Không đủ tồn kho cho sản phẩm ${product?.name || 'Unknown'}. Tồn kho hiện tại: ${variant.quantity}, yêu cầu: ${item.quantity}`
+          message: `Không đủ tồn kho cho sản phẩm ${product?.name || 'Unknown'}. Tồn kho hiện tại: ${availableStock}, yêu cầu: ${item.quantity}`
         });
+      }
+
+      processedItems.push({
+        productId: productId,
+        variantId: variantId,
+        quantity: item.quantity,
+        price: item.price,
+        variant: variant
+      });
+    }
+
+    // Handle voucher
+    let finalVoucherId = voucherId;
+    if (voucher && !voucherId) {
+      if (voucher.trim() !== '') {
+        const voucherRecord = await db.Voucher.findOne({
+          where: { code: voucher }
+        });
+        if (voucherRecord) {
+          finalVoucherId = voucherRecord.id;
+        }
       }
     }
 
-    // Tạo đơn hàng POS
-    const newOrder = await db.Order.create({
-      customerId: customerId || null,
-      staffId: req.account.id,
-      voucherId: voucherId || null,
+    // Create order data
+    const orderData = {
+      code: orderId || undefined, // Let the hook generate if not provided
+      customerId: finalCustomerId,
+      staffId: req.account?.id || null, // Handle case when no auth middleware
+      voucherId: finalVoucherId || null,
       subTotal,
       discount: discount || 0,
       total,
       paymentMethod,
-      paymentStatus: 'COMPLETED',
-      orderStatus: 'HOAN_THANH'
-    });
+      paymentStatus: 'PAID', // POS orders are immediately paid
+      orderStatus: orderStatus || 'HOAN_THANH'
+    };
 
-    // Tạo order items
-    for (const item of items) {
+    // Handle shipping address if provided
+    if (shippingAddress) {
+      orderData.shippingName = shippingAddress.name;
+      orderData.shippingPhoneNumber = shippingAddress.phoneNumber;
+      orderData.shippingProvinceId = shippingAddress.provinceId;
+      orderData.shippingDistrictId = shippingAddress.districtId;
+      orderData.shippingWardId = shippingAddress.wardId;
+      orderData.shippingSpecificAddress = shippingAddress.specificAddress;
+    }
+
+    // Tạo đơn hàng POS
+    const newOrder = await db.Order.create(orderData);
+
+    // Tạo order items với field name đúng
+    for (const item of processedItems) {
       await db.OrderItem.create({
         orderId: newOrder.id,
-        productId: item.productId,
-        productVariantId: item.productVariantId,
+        variantId: item.variantId, // Use correct field name
         quantity: item.quantity,
         price: item.price
       });
     }
 
     // Cập nhật stock
-    await updateProductStock(items, 1);
+    for (const item of processedItems) {
+      const variant = item.variant;
+      const currentStock = variant.stock || variant.quantity || 0;
+      const newStock = Math.max(0, currentStock - item.quantity);
+      
+      // Update using the correct field name
+      if (variant.stock !== undefined) {
+        await variant.update({ stock: newStock });
+      } else if (variant.quantity !== undefined) {
+        await variant.update({ quantity: newStock });
+      }
+    }
 
     // Lấy đơn hàng với đầy đủ thông tin
     const populatedOrder = await db.Order.findByPk(newOrder.id, {
@@ -867,21 +1014,21 @@ export const createPOSOrder = async (req, res) => {
         {
           model: db.Voucher,
           as: 'voucher',
-          attributes: ['id', 'code', 'name', 'discountType', 'discountValue']
+          attributes: ['id', 'code', 'name', 'type', 'value']
         },
         {
           model: db.OrderItem,
           as: 'items',
           include: [
             {
-              model: db.Product,
-              as: 'product',
-              attributes: ['id', 'code', 'name']
-            },
-            {
               model: db.ProductVariant,
               as: 'productVariant',
               include: [
+                {
+                  model: db.Product,
+                  as: 'product',
+                  attributes: ['id', 'code', 'name']
+                },
                 { model: db.Color, as: 'color', attributes: ['id', 'name', 'code'] },
                 { model: db.Size, as: 'size', attributes: ['id', 'value'] }
               ]
@@ -897,6 +1044,7 @@ export const createPOSOrder = async (req, res) => {
       data: populatedOrder
     });
   } catch (error) {
+    console.error('POS Order Error:', error);
     return res.status(500).json({
       success: false,
       message: 'Đã xảy ra lỗi khi tạo đơn hàng POS',

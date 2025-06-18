@@ -302,4 +302,105 @@ export const validateProductPromotion = (promotionData) => {
   }
 
   return promotionData;
+};
+
+/**
+ * Validate product data for creation
+ * @param {object} productData 
+ * @returns {object} 
+ */
+export const validateProduct = (productData) => {
+  const errors = [];
+  
+  if (!productData) {
+    throw new Error('Dữ liệu sản phẩm không được để trống');
+  }
+
+  // Validate basic product fields
+  if (!productData.name || typeof productData.name !== 'string' || productData.name.trim() === '') {
+    errors.push('Tên sản phẩm không được để trống');
+  }
+  
+  if (!productData.brand) {
+    errors.push('Thương hiệu không được để trống');
+  }
+  
+  if (!productData.category) {
+    errors.push('Danh mục không được để trống');
+  }
+  
+  if (!productData.material) {
+    errors.push('Chất liệu không được để trống');
+  }
+  
+  if (!productData.description || typeof productData.description !== 'string' || productData.description.trim() === '') {
+    errors.push('Mô tả sản phẩm không được để trống');
+  }
+  
+  if (productData.weight === undefined || productData.weight === null || isNaN(Number(productData.weight)) || Number(productData.weight) < 0) {
+    errors.push('Trọng lượng phải là số và không được âm');
+  }
+  
+  if (!productData.variants || !Array.isArray(productData.variants) || productData.variants.length === 0) {
+    errors.push('Sản phẩm phải có ít nhất một biến thể');
+  }
+
+  // Validate variants
+  if (productData.variants && Array.isArray(productData.variants)) {
+    productData.variants.forEach((variant, index) => {
+      const variantErrors = validateProductVariant(variant, index + 1);
+      errors.push(...variantErrors);
+    });
+  }
+
+  if (errors.length > 0) {
+    const error = new Error('Dữ liệu sản phẩm không hợp lệ');
+    error.validationErrors = errors;
+    error.receivedData = {
+      name: productData.name || 'undefined',
+      brand: productData.brand || 'undefined',
+      category: productData.category || 'undefined',
+      material: productData.material || 'undefined',
+      description: productData.description || 'undefined',
+      weight: productData.weight !== undefined ? productData.weight : 'undefined',
+      variantsCount: productData.variants ? productData.variants.length : 0
+    };
+    throw error;
+  }
+
+  return productData;
+};
+
+/**
+ * Validate product variant data
+ * @param {object} variant 
+ * @param {number} index 
+ * @returns {array} Array of error messages
+ */
+export const validateProductVariant = (variant, index) => {
+  const errors = [];
+  
+  if (!variant.colorId) {
+    errors.push(`Biến thể ${index}: Thiếu colorId`);
+  }
+  
+  if (!variant.sizeId) {
+    errors.push(`Biến thể ${index}: Thiếu sizeId`);
+  }
+  
+  if (!variant.price || isNaN(Number(variant.price)) || Number(variant.price) <= 0) {
+    errors.push(`Biến thể ${index}: Giá phải là số dương`);
+  }
+  
+  if (variant.stock !== undefined && variant.stock !== null) {
+    if (isNaN(Number(variant.stock)) || Number(variant.stock) < 0) {
+      errors.push(`Biến thể ${index}: Số lượng tồn kho phải là số không âm`);
+    }
+  }
+  
+  if (variant.images && !Array.isArray(variant.images)) {
+    errors.push(`Biến thể ${index}: Images phải là mảng`);
+  }
+  
+  return errors;
 }; 

@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       });
       OrderItem.belongsTo(models.ProductVariant, {
         foreignKey: 'variantId',
-        as: 'variant'
+        as: 'productVariant'
       });
     }
   }
