@@ -177,13 +177,20 @@ export const createOrder = async (req, res) => {
                 {
                   model: db.Product,
                   as: 'product',
-                  attributes: ['id', 'code', 'name'],
+                  attributes: ['id', 'code', 'name', 'description', 'weight', 'status'],
                   include: [
-                    { model: db.Brand, as: 'brand', attributes: ['id', 'name'] }
+                    { model: db.Brand, as: 'brand', attributes: ['id', 'name'] },
+                    { model: db.Category, as: 'category', attributes: ['id', 'name'] },
+                    { model: db.Material, as: 'material', attributes: ['id', 'name'] }
                   ]
                 },
                 { model: db.Color, as: 'color', attributes: ['id', 'name', 'code'] },
-                { model: db.Size, as: 'size', attributes: ['id', 'value'] }
+                { model: db.Size, as: 'size', attributes: ['id', 'value'] },
+                { 
+                  model: db.ProductVariantImage, 
+                  as: 'images', 
+                  attributes: ['id', 'imageUrl'] 
+                }
               ]
             }
           ]
@@ -281,10 +288,20 @@ export const getOrders = async (req, res) => {
                 {
                   model: db.Product,
                   as: 'product',
-                  attributes: ['id', 'code', 'name']
+                  attributes: ['id', 'code', 'name', 'description', 'weight', 'status'],
+                  include: [
+                    { model: db.Brand, as: 'brand', attributes: ['id', 'name'] },
+                    { model: db.Category, as: 'category', attributes: ['id', 'name'] },
+                    { model: db.Material, as: 'material', attributes: ['id', 'name'] }
+                  ]
                 },
                 { model: db.Color, as: 'color', attributes: ['id', 'name', 'code'] },
-                { model: db.Size, as: 'size', attributes: ['id', 'value'] }
+                { model: db.Size, as: 'size', attributes: ['id', 'value'] },
+                { 
+                  model: db.ProductVariantImage, 
+                  as: 'images', 
+                  attributes: ['id', 'imageUrl'] 
+                }
               ]
             }
           ]
@@ -361,13 +378,20 @@ export const getOrderById = async (req, res) => {
                 {
                   model: db.Product,
                   as: 'product',
-                  attributes: ['id', 'code', 'name'],
+                  attributes: ['id', 'code', 'name', 'description', 'weight', 'status'],
                   include: [
-                    { model: db.Brand, as: 'brand', attributes: ['id', 'name'] }
+                    { model: db.Brand, as: 'brand', attributes: ['id', 'name'] },
+                    { model: db.Category, as: 'category', attributes: ['id', 'name'] },
+                    { model: db.Material, as: 'material', attributes: ['id', 'name'] }
                   ]
                 },
                 { model: db.Color, as: 'color', attributes: ['id', 'name', 'code'] },
-                { model: db.Size, as: 'size', attributes: ['id', 'value'] }
+                { model: db.Size, as: 'size', attributes: ['id', 'value'] },
+                { 
+                  model: db.ProductVariantImage, 
+                  as: 'images', 
+                  attributes: ['id', 'imageUrl'] 
+                }
               ]
             }
           ]
@@ -458,10 +482,20 @@ export const updateOrder = async (req, res) => {
                 {
                   model: db.Product,
                   as: 'product',
-                  attributes: ['id', 'code', 'name']
+                  attributes: ['id', 'code', 'name', 'description', 'weight', 'status'],
+                  include: [
+                    { model: db.Brand, as: 'brand', attributes: ['id', 'name'] },
+                    { model: db.Category, as: 'category', attributes: ['id', 'name'] },
+                    { model: db.Material, as: 'material', attributes: ['id', 'name'] }
+                  ]
                 },
                 { model: db.Color, as: 'color', attributes: ['id', 'name', 'code'] },
-                { model: db.Size, as: 'size', attributes: ['id', 'value'] }
+                { model: db.Size, as: 'size', attributes: ['id', 'value'] },
+                { 
+                  model: db.ProductVariantImage, 
+                  as: 'images', 
+                  attributes: ['id', 'imageUrl'] 
+                }
               ]
             }
           ]
@@ -641,7 +675,12 @@ export const getMyOrders = async (req, res) => {
                 {
                   model: db.Product,
                   as: 'product',
-                  attributes: ['id', 'code', 'name']
+                  attributes: ['id', 'code', 'name', 'description', 'weight', 'status'],
+                  include: [
+                    { model: db.Brand, as: 'brand', attributes: ['id', 'name'] },
+                    { model: db.Category, as: 'category', attributes: ['id', 'name'] },
+                    { model: db.Material, as: 'material', attributes: ['id', 'name'] }
+                  ]
                 },
                 { model: db.Color, as: 'color', attributes: ['id', 'name', 'code'] },
                 { model: db.Size, as: 'size', attributes: ['id', 'value'] },
@@ -728,10 +767,20 @@ export const getOrdersByUserId = async (req, res) => {
                 {
                   model: db.Product,
                   as: 'product',
-                  attributes: ['id', 'code', 'name']
+                  attributes: ['id', 'code', 'name', 'description', 'weight', 'status'],
+                  include: [
+                    { model: db.Brand, as: 'brand', attributes: ['id', 'name'] },
+                    { model: db.Category, as: 'category', attributes: ['id', 'name'] },
+                    { model: db.Material, as: 'material', attributes: ['id', 'name'] }
+                  ]
                 },
                 { model: db.Color, as: 'color', attributes: ['id', 'name', 'code'] },
-                { model: db.Size, as: 'size', attributes: ['id', 'value'] }
+                { model: db.Size, as: 'size', attributes: ['id', 'value'] },
+                { 
+                  model: db.ProductVariantImage, 
+                  as: 'images', 
+                  attributes: ['id', 'imageUrl'] 
+                }
               ]
             }
           ]
@@ -1027,10 +1076,20 @@ export const createPOSOrder = async (req, res) => {
                 {
                   model: db.Product,
                   as: 'product',
-                  attributes: ['id', 'code', 'name']
+                  attributes: ['id', 'code', 'name', 'description', 'weight', 'status'],
+                  include: [
+                    { model: db.Brand, as: 'brand', attributes: ['id', 'name'] },
+                    { model: db.Category, as: 'category', attributes: ['id', 'name'] },
+                    { model: db.Material, as: 'material', attributes: ['id', 'name'] }
+                  ]
                 },
                 { model: db.Color, as: 'color', attributes: ['id', 'name', 'code'] },
-                { model: db.Size, as: 'size', attributes: ['id', 'value'] }
+                { model: db.Size, as: 'size', attributes: ['id', 'value'] },
+                { 
+                  model: db.ProductVariantImage, 
+                  as: 'images', 
+                  attributes: ['id', 'imageUrl'] 
+                }
               ]
             }
           ]
