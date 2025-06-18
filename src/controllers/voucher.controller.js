@@ -51,14 +51,14 @@ export const createVoucher = async (req, res) => {
     const newVoucher = await db.Voucher.create({
       code,
       name,
-      discountType,
-      discountValue,
+      type: discountType,
+      value: discountValue,
       quantity,
       startDate,
       endDate,
       minOrderValue: minOrderValue || 0,
       maxDiscount,
-      status: status || 'ACTIVE'
+      status: status || 'HOAT_DONG'
     });
 
     return res.status(201).json({

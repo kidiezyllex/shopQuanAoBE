@@ -8,7 +8,8 @@ import { Op } from 'sequelize';
  */
 export const createPromotion = async (req, res) => {
   try {
-    const { name, description, discountPercent, productIds, startDate, endDate } = req.body;
+    const { name, description, discountPercent, products, startDate, endDate } = req.body;
+    const productIds = products; // Map products to productIds for backwards compatibility
 
     // Kiểm tra các trường bắt buộc
     if (!name || !discountPercent || !startDate || !endDate) {
