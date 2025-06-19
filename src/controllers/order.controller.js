@@ -11,7 +11,9 @@ const updateProductStock = async (items, multiplier = 1) => {
     let variantId;
     
     // Handle different item structures
-    if (item.variantId) {
+    if (item.resolvedVariantId) {
+      variantId = item.resolvedVariantId;
+    } else if (item.variantId) {
       variantId = item.variantId;
     } else if (item.productVariantId) {
       variantId = item.productVariantId;
@@ -81,27 +83,50 @@ export const createOrder = async (req, res) => {
 
     // Kiểm tra và validate stock trước khi tạo đơn hàng
     for (const item of items) {
-      if (!Number.isInteger(parseInt(item.productId)) || parseInt(item.productId) <= 0) {
+      // Handle both productId and product field names
+      const productId = item.productId || item.product;
+      
+      if (!Number.isInteger(parseInt(productId)) || parseInt(productId) <= 0) {
         return res.status(400).json({
           success: false,
           message: 'ID sản phẩm không hợp lệ'
         });
       }
 
-      const product = await db.Product.findByPk(item.productId);
+      const product = await db.Product.findByPk(productId);
       if (!product) {
         return res.status(404).json({
           success: false,
-          message: `Không tìm thấy sản phẩm với ID: ${item.productId}`
+          message: `Không tìm thấy sản phẩm với ID: ${productId}`
         });
       }
 
-      const variant = await db.ProductVariant.findOne({
-        where: {
-          id: item.productVariantId,
-          productId: item.productId
-        }
-      });
+      let variant;
+      
+      // Handle different variant structures
+      if (item.productVariantId) {
+        // Direct variant ID provided
+        variant = await db.ProductVariant.findOne({
+          where: {
+            id: item.productVariantId,
+            productId: productId
+          }
+        });
+      } else if (item.variant && item.variant.colorId && item.variant.sizeId) {
+        // Variant specified by colorId and sizeId
+        variant = await db.ProductVariant.findOne({
+          where: {
+            productId: productId,
+            colorId: item.variant.colorId,
+            sizeId: item.variant.sizeId
+          }
+        });
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: 'Thông tin biến thể sản phẩm không hợp lệ. Cần cung cấp productVariantId hoặc variant với colorId và sizeId'
+        });
+      }
 
       if (!variant) {
         return res.status(404).json({
@@ -109,6 +134,9 @@ export const createOrder = async (req, res) => {
           message: `Không tìm thấy biến thể sản phẩm cho sản phẩm ${product.name}`
         });
       }
+
+      // Store the variant ID for later use
+      item.resolvedVariantId = variant.id;
 
       // Kiểm tra tồn kho
       if (variant.stock < item.quantity) {
@@ -138,7 +166,7 @@ export const createOrder = async (req, res) => {
     for (const item of items) {
       const orderItem = await db.OrderItem.create({
         orderId: newOrder.id,
-        variantId: item.productVariantId,
+        variantId: item.resolvedVariantId || item.productVariantId,
         quantity: item.quantity,
         price: item.price
       });
@@ -595,7 +623,10 @@ export const cancelOrder = async (req, res) => {
 export const updateOrderStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { orderStatus } = req.body;
+    const { orderStatus, status } = req.body;
+    
+    // Accept both 'orderStatus' and 'status' field names
+    const statusToUpdate = orderStatus || status;
     
     if (!Number.isInteger(parseInt(id)) || parseInt(id) <= 0) {
       return res.status(400).json({
@@ -604,8 +635,15 @@ export const updateOrderStatus = async (req, res) => {
       });
     }
 
-    const validStatuses = ['CHO_XAC_NHAN', 'DA_XAC_NHAN', 'DANG_GIAO', 'HOAN_THANH', 'DA_HUY'];
-    if (!validStatuses.includes(orderStatus)) {
+    if (!statusToUpdate) {
+      return res.status(400).json({
+        success: false,
+        message: 'Vui lòng cung cấp trạng thái đơn hàng (orderStatus hoặc status)'
+      });
+    }
+
+    const validStatuses = ['CHO_XAC_NHAN', 'CHO_GIAO_HANG', 'DANG_VAN_CHUYEN', 'DA_GIAO_HANG', 'HOAN_THANH', 'DA_HUY'];
+    if (!validStatuses.includes(statusToUpdate)) {
       return res.status(400).json({
         success: false,
         message: 'Trạng thái đơn hàng không hợp lệ'
@@ -621,7 +659,7 @@ export const updateOrderStatus = async (req, res) => {
       });
     }
 
-    order.orderStatus = orderStatus;
+    order.orderStatus = statusToUpdate;
     await order.save();
 
     return res.status(200).json({
