@@ -1024,9 +1024,14 @@ export const createPOSOrder = async (req, res) => {
     // Handle voucher
     let finalVoucherId = voucherId;
     if (voucher && !voucherId) {
-      if (voucher.trim() !== '') {
+      // Handle voucher as either ID (number) or code (string)
+      if (typeof voucher === 'number') {
+        // If voucher is a number, treat it as voucher ID
+        finalVoucherId = voucher;
+      } else if (typeof voucher === 'string' && voucher.trim() !== '') {
+        // If voucher is a string, treat it as voucher code
         const voucherRecord = await db.Voucher.findOne({
-          where: { code: voucher }
+          where: { code: voucher.trim() }
         });
         if (voucherRecord) {
           finalVoucherId = voucherRecord.id;

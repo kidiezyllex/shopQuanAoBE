@@ -12,7 +12,6 @@ module.exports = {
     );
     
     if (existingAccounts.length > 0) {
-      console.log('Accounts already exist, skipping seeder...');
       return;
     }
     
