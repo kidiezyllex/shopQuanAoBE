@@ -10,7 +10,6 @@ const updateProductStock = async (items, multiplier = 1) => {
   for (const item of items) {
     let variantId;
     
-    // Handle different item structures
     if (item.resolvedVariantId) {
       variantId = item.resolvedVariantId;
     } else if (item.variantId) {
@@ -18,28 +17,24 @@ const updateProductStock = async (items, multiplier = 1) => {
     } else if (item.productVariantId) {
       variantId = item.productVariantId;
     } else {
-      continue; // Skip if no variant ID found
+      continue; 
     }
 
     if (!Number.isInteger(parseInt(variantId)) || parseInt(variantId) <= 0) {
-      continue; // Skip invalid variant ID
+      continue; 
     }
 
-    // Find variant by variantId
     const variant = await db.ProductVariant.findByPk(variantId);
 
     if (variant) {
-      // Use the correct stock field name
       const stockField = variant.stock !== undefined ? 'stock' : 'quantity';
       const currentStock = variant[stockField] || 0;
       
       if (multiplier === 1) {
-        // Subtract stock (when completing order)
         if (currentStock >= item.quantity) {
           await variant.update({ [stockField]: currentStock - item.quantity });
         }
       } else {
-        // Add stock (when canceling order or returns)
         await variant.update({ [stockField]: currentStock + item.quantity });
       }
     }
@@ -65,10 +60,58 @@ export const createOrder = async (req, res) => {
       paymentMethod 
     } = req.body;
 
-    if (!customerId || !items || !subTotal || !total || !paymentMethod) {
+    // Validate required fields
+    const validationErrors = [];
+    
+    if (!customerId) {
+      validationErrors.push('customerId là bắt buộc');
+    }
+    
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      validationErrors.push('items là bắt buộc và phải là mảng không rỗng');
+    }
+    
+    if (subTotal === undefined || subTotal === null) {
+      validationErrors.push('subTotal là bắt buộc');
+    }
+    
+    if (total === undefined || total === null) {
+      validationErrors.push('total là bắt buộc');
+    }
+    
+    if (!paymentMethod) {
+      validationErrors.push('paymentMethod là bắt buộc');
+    }
+    
+    if (!shippingAddress) {
+      validationErrors.push('shippingAddress là bắt buộc');
+    } else {
+      // Validate shipping address fields
+      if (!shippingAddress.name) {
+        validationErrors.push('shippingAddress.name là bắt buộc');
+      }
+      if (!shippingAddress.phoneNumber) {
+        validationErrors.push('shippingAddress.phoneNumber là bắt buộc');
+      }
+      if (!shippingAddress.specificAddress) {
+        validationErrors.push('shippingAddress.specificAddress là bắt buộc');
+      }
+    }
+
+    if (validationErrors.length > 0) {
       return res.status(400).json({
         success: false,
-        message: 'Vui lòng cung cấp đầy đủ thông tin: customerId, items, subTotal, total, paymentMethod'
+        message: 'Dữ liệu đầu vào không hợp lệ',
+        errors: validationErrors
+      });
+    }
+
+    // Validate payment method
+    const validPaymentMethods = ['CASH', 'BANK_TRANSFER', 'COD', 'MIXED'];
+    if (!validPaymentMethods.includes(paymentMethod)) {
+      return res.status(400).json({
+        success: false,
+        message: `paymentMethod không hợp lệ. Các giá trị hợp lệ: ${validPaymentMethods.join(', ')}`
       });
     }
 
@@ -77,27 +120,61 @@ export const createOrder = async (req, res) => {
     if (!customer) {
       return res.status(404).json({
         success: false,
-        message: 'Không tìm thấy khách hàng'
+        message: 'Không tìm thấy khách hàng với ID: ' + customerId
       });
     }
 
-    // Kiểm tra và validate stock trước khi tạo đơn hàng
-    for (const item of items) {
-      // Handle both productId and product field names
+    // Validate items
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const itemErrors = [];
+      
       const productId = item.productId || item.product;
       
-      if (!Number.isInteger(parseInt(productId)) || parseInt(productId) <= 0) {
+      if (!productId) {
+        itemErrors.push('product/productId là bắt buộc');
+      } else if (!Number.isInteger(parseInt(productId)) || parseInt(productId) <= 0) {
+        itemErrors.push('product/productId phải là số nguyên dương');
+      }
+      
+      if (!item.quantity || !Number.isInteger(parseInt(item.quantity)) || parseInt(item.quantity) <= 0) {
+        itemErrors.push('quantity phải là số nguyên dương');
+      }
+      
+      if (item.price === undefined || item.price === null || parseFloat(item.price) <= 0) {
+        itemErrors.push('price phải là số dương');
+      }
+      
+      if (!item.variant) {
+        itemErrors.push('variant là bắt buộc');
+      } else {
+        if (!item.variant.colorId || !Number.isInteger(parseInt(item.variant.colorId)) || parseInt(item.variant.colorId) <= 0) {
+          itemErrors.push('variant.colorId phải là số nguyên dương');
+        }
+        if (!item.variant.sizeId || !Number.isInteger(parseInt(item.variant.sizeId)) || parseInt(item.variant.sizeId) <= 0) {
+          itemErrors.push('variant.sizeId phải là số nguyên dương');
+        }
+      }
+      
+      if (itemErrors.length > 0) {
         return res.status(400).json({
           success: false,
-          message: 'ID sản phẩm không hợp lệ'
+          message: `Lỗi trong item[${i}]`,
+          errors: itemErrors
         });
       }
+    }
+
+    // Kiểm tra và validate stock trước khi tạo đơn hàng
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const productId = item.productId || item.product;
 
       const product = await db.Product.findByPk(productId);
       if (!product) {
         return res.status(404).json({
           success: false,
-          message: `Không tìm thấy sản phẩm với ID: ${productId}`
+          message: `Không tìm thấy sản phẩm với ID: ${productId} trong item[${i}]`
         });
       }
 
@@ -121,17 +198,12 @@ export const createOrder = async (req, res) => {
             sizeId: item.variant.sizeId
           }
         });
-      } else {
-        return res.status(400).json({
-          success: false,
-          message: 'Thông tin biến thể sản phẩm không hợp lệ. Cần cung cấp productVariantId hoặc variant với colorId và sizeId'
-        });
       }
 
       if (!variant) {
         return res.status(404).json({
           success: false,
-          message: `Không tìm thấy biến thể sản phẩm cho sản phẩm ${product.name}`
+          message: `Không tìm thấy biến thể sản phẩm cho sản phẩm "${product.name}" với colorId: ${item.variant?.colorId}, sizeId: ${item.variant?.sizeId} trong item[${i}]`
         });
       }
 
@@ -142,24 +214,36 @@ export const createOrder = async (req, res) => {
       if (variant.stock < item.quantity) {
         return res.status(400).json({
           success: false,
-          message: `Không đủ tồn kho cho sản phẩm ${product.name}. Tồn kho hiện tại: ${variant.stock}, yêu cầu: ${item.quantity}`
+          message: `Không đủ tồn kho cho sản phẩm "${product.name}" trong item[${i}]. Tồn kho hiện tại: ${variant.stock}, yêu cầu: ${item.quantity}`
         });
       }
     }
 
-    // Tạo đơn hàng
-    const newOrder = await db.Order.create({
+    // Tạo đơn hàng với shipping address được lưu trong các field riêng biệt
+    const orderData = {
       customerId,
       staffId: req.account ? req.account.id : null,
       voucherId: voucherId || null,
       subTotal,
       discount: discount || 0,
       total,
-      shippingAddress: JSON.stringify(shippingAddress),
+      shippingName: shippingAddress.name,
+      shippingPhoneNumber: shippingAddress.phoneNumber,
+      shippingProvinceId: shippingAddress.provinceId || null,
+      shippingDistrictId: shippingAddress.districtId || null,
+      shippingWardId: shippingAddress.wardId || null,
+      shippingSpecificAddress: shippingAddress.specificAddress,
       paymentMethod,
       paymentStatus: 'PENDING',
       orderStatus: 'CHO_XAC_NHAN'
-    });
+    };
+
+    // Add custom orderId if provided
+    if (orderId) {
+      orderData.code = orderId;
+    }
+
+    const newOrder = await db.Order.create(orderData);
 
     // Tạo order items
     const orderItems = [];
@@ -232,6 +316,36 @@ export const createOrder = async (req, res) => {
       data: populatedOrder
     });
   } catch (error) {
+    console.error('Error creating order:', error);
+    
+    // Handle Sequelize validation errors
+    if (error.name === 'SequelizeValidationError') {
+      const validationErrors = error.errors.map(err => `${err.path}: ${err.message}`);
+      return res.status(400).json({
+        success: false,
+        message: 'Lỗi validation dữ liệu',
+        errors: validationErrors
+      });
+    }
+    
+    // Handle Sequelize unique constraint errors
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(400).json({
+        success: false,
+        message: 'Mã đơn hàng đã tồn tại',
+        error: 'Duplicate order code'
+      });
+    }
+    
+    // Handle foreign key constraint errors
+    if (error.name === 'SequelizeForeignKeyConstraintError') {
+      return res.status(400).json({
+        success: false,
+        message: 'Dữ liệu tham chiếu không hợp lệ',
+        error: 'Foreign key constraint error'
+      });
+    }
+
     return res.status(500).json({
       success: false,
       message: 'Đã xảy ra lỗi khi tạo đơn hàng',
@@ -477,7 +591,14 @@ export const updateOrder = async (req, res) => {
     // Cập nhật thông tin
     if (orderStatus) order.orderStatus = orderStatus;
     if (paymentStatus) order.paymentStatus = paymentStatus;
-    if (shippingAddress) order.shippingAddress = JSON.stringify(shippingAddress);
+    if (shippingAddress) {
+      order.shippingName = shippingAddress.name;
+      order.shippingPhoneNumber = shippingAddress.phoneNumber;
+      order.shippingProvinceId = shippingAddress.provinceId || null;
+      order.shippingDistrictId = shippingAddress.districtId || null;
+      order.shippingWardId = shippingAddress.wardId || null;
+      order.shippingSpecificAddress = shippingAddress.specificAddress;
+    }
 
     await order.save();
 
@@ -1146,7 +1267,6 @@ export const createPOSOrder = async (req, res) => {
       data: populatedOrder
     });
   } catch (error) {
-    console.error('POS Order Error:', error);
     return res.status(500).json({
       success: false,
       message: 'Đã xảy ra lỗi khi tạo đơn hàng POS',

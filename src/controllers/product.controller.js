@@ -262,9 +262,6 @@ export const createProduct = async (req, res) => {
       data: productWithDetails
     });
   } catch (error) {
-    console.error('Product creation error:', error);
-    
-    // If it's a Sequelize validation error, provide more details
     if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
       return res.status(400).json({
         success: false,
@@ -278,7 +275,6 @@ export const createProduct = async (req, res) => {
       });
     }
 
-    // Handle foreign key constraint errors
     if (error.name === 'SequelizeForeignKeyConstraintError') {
       return res.status(400).json({
         success: false,
