@@ -57,7 +57,8 @@ export const createOrder = async (req, res) => {
       discount, 
       total, 
       shippingAddress,
-      paymentMethod 
+      paymentMethod,
+      paymentInfo
     } = req.body;
 
     // Validate required fields
@@ -165,7 +166,6 @@ export const createOrder = async (req, res) => {
       }
     }
 
-    // Kiểm tra và validate stock trước khi tạo đơn hàng
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
       const productId = item.productId || item.product;
@@ -180,9 +180,7 @@ export const createOrder = async (req, res) => {
 
       let variant;
       
-      // Handle different variant structures
       if (item.productVariantId) {
-        // Direct variant ID provided
         variant = await db.ProductVariant.findOne({
           where: {
             id: item.productVariantId,
@@ -190,7 +188,6 @@ export const createOrder = async (req, res) => {
           }
         });
       } else if (item.variant && item.variant.colorId && item.variant.sizeId) {
-        // Variant specified by colorId and sizeId
         variant = await db.ProductVariant.findOne({
           where: {
             productId: productId,
@@ -207,10 +204,8 @@ export const createOrder = async (req, res) => {
         });
       }
 
-      // Store the variant ID for later use
       item.resolvedVariantId = variant.id;
 
-      // Kiểm tra tồn kho
       if (variant.stock < item.quantity) {
         return res.status(400).json({
           success: false,
@@ -219,7 +214,15 @@ export const createOrder = async (req, res) => {
       }
     }
 
-    // Tạo đơn hàng với shipping address được lưu trong các field riêng biệt
+    let paymentStatus = 'PENDING';
+    if (paymentMethod === 'BANK_TRANSFER') {
+      if (paymentInfo && paymentInfo.status === 'SUCCESS') {
+        paymentStatus = 'SUCCESS';
+      } else {
+        paymentStatus = 'SUCCESS';
+      }
+    }
+
     const orderData = {
       customerId,
       staffId: req.account ? req.account.id : null,
@@ -234,7 +237,7 @@ export const createOrder = async (req, res) => {
       shippingWardId: shippingAddress.wardId || null,
       shippingSpecificAddress: shippingAddress.specificAddress,
       paymentMethod,
-      paymentStatus: 'PENDING',
+      paymentStatus,
       orderStatus: 'CHO_XAC_NHAN'
     };
 
