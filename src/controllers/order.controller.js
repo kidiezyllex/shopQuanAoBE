@@ -217,9 +217,9 @@ export const createOrder = async (req, res) => {
     let paymentStatus = 'PENDING';
     if (paymentMethod === 'BANK_TRANSFER') {
       if (paymentInfo && paymentInfo.status === 'SUCCESS') {
-        paymentStatus = 'SUCCESS';
+        paymentStatus = 'PAID';
       } else {
-        paymentStatus = 'SUCCESS';
+        paymentStatus = 'PAID';
       }
     }
 
@@ -237,7 +237,7 @@ export const createOrder = async (req, res) => {
       shippingWardId: shippingAddress.wardId || null,
       shippingSpecificAddress: shippingAddress.specificAddress,
       paymentMethod,
-      paymentStatus,
+      paymentStatus: paymentStatus,
       orderStatus: 'CHO_XAC_NHAN'
     };
 
