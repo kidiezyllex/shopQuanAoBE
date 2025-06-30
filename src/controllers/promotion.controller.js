@@ -1,5 +1,6 @@
 import { db } from '../config/database.js';
 import { Op } from 'sequelize';
+import { convertVietnamToUTC, convertPromotionToVietnamTime } from '../utils/timezone.js';
 
 /**
  * Tạo chương trình khuyến mãi mới
@@ -27,10 +28,11 @@ export const createPromotion = async (req, res) => {
       });
     }
 
-    // Kiểm tra thời gian hợp lệ
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    if (start >= end) {
+    // Kiểm tra thời gian hợp lệ và xử lý timezone Vietnam (UTC+7)
+    const startDateUTC = convertVietnamToUTC(startDate);
+    const endDateUTC = convertVietnamToUTC(endDate);
+    
+    if (startDateUTC >= endDateUTC) {
       return res.status(400).json({
         success: false,
         message: 'Thời gian kết thúc phải sau thời gian bắt đầu'
@@ -67,15 +69,15 @@ export const createPromotion = async (req, res) => {
       description,
       discountPercent,
       productIds: productIds ? JSON.stringify(productIds) : null,
-      startDate,
-      endDate,
+      startDate: startDateUTC,
+      endDate: endDateUTC,
       status: 'ACTIVE'
     });
 
     return res.status(201).json({
       success: true,
       message: 'Tạo chương trình khuyến mãi thành công',
-      data: newPromotion
+      data: convertPromotionToVietnamTime(newPromotion)
     });
   } catch (error) {
     return res.status(500).json({
@@ -130,7 +132,7 @@ export const getPromotions = async (req, res) => {
       success: true,
       message: 'Lấy danh sách chương trình khuyến mãi thành công',
       data: {
-        promotions,
+        promotions: promotions.map(convertPromotionToVietnamTime),
         pagination: {
           totalItems: count,
           totalPages: Math.ceil(count / parseInt(limit)),
@@ -199,7 +201,7 @@ export const getPromotionById = async (req, res) => {
       success: true,
       message: 'Lấy thông tin chương trình khuyến mãi thành công',
       data: {
-        ...promotion.toJSON(),
+        ...convertPromotionToVietnamTime(promotion),
         products
       }
     });
@@ -246,11 +248,13 @@ export const updatePromotion = async (req, res) => {
       });
     }
     
-    // Kiểm tra thời gian hợp lệ
+    // Kiểm tra thời gian hợp lệ và xử lý timezone Vietnam (UTC+7)
+    let startDateUTC, endDateUTC;
     if (startDate && endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      if (start >= end) {
+      startDateUTC = convertVietnamToUTC(startDate);
+      endDateUTC = convertVietnamToUTC(endDate);
+      
+      if (startDateUTC >= endDateUTC) {
         return res.status(400).json({
           success: false,
           message: 'Thời gian kết thúc phải sau thời gian bắt đầu'
@@ -287,8 +291,8 @@ export const updatePromotion = async (req, res) => {
     if (description !== undefined) promotion.description = description;
     if (discountPercent !== undefined) promotion.discountPercent = discountPercent;
     if (productIds !== undefined) promotion.productIds = productIds ? JSON.stringify(productIds) : null;
-    if (startDate) promotion.startDate = startDate;
-    if (endDate) promotion.endDate = endDate;
+    if (startDate) promotion.startDate = startDateUTC || startDate;
+    if (endDate) promotion.endDate = endDateUTC || endDate;
     if (status) promotion.status = status;
     
     await promotion.save();
@@ -296,7 +300,7 @@ export const updatePromotion = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'Cập nhật chương trình khuyến mãi thành công',
-      data: promotion
+      data: convertPromotionToVietnamTime(promotion)
     });
   } catch (error) {
     return res.status(500).json({
@@ -379,7 +383,7 @@ export const getProductPromotions = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'Lấy danh sách khuyến mãi của sản phẩm thành công',
-      data: promotions
+      data: promotions.map(convertPromotionToVietnamTime)
     });
   } catch (error) {
     return res.status(500).json({
