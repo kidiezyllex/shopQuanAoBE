@@ -20,7 +20,7 @@ export const login = async (req, res) => {
       });
     }
 
-    if (account.status === 'KHONG_HOAT_DONG') {
+    if (account.status === 'INACTIVE') {
       return res.status(403).json({
         success: false,
         message: 'Tài khoản đã bị khóa'

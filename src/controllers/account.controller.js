@@ -221,7 +221,7 @@ export const updateAccountStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
     
-    if (!['HOAT_DONG', 'KHONG_HOAT_DONG'].includes(status)) {
+    if (!['ACTIVE', 'INACTIVE'].includes(status)) {
       return res.status(400).json({
         success: false,
         message: 'Trạng thái không hợp lệ'
@@ -242,7 +242,7 @@ export const updateAccountStatus = async (req, res) => {
     
     return res.status(200).json({
       success: true,
-      message: `${status === 'HOAT_DONG' ? 'Kích hoạt' : 'Vô hiệu hóa'} tài khoản thành công`,
+      message: `${status === 'ACTIVE' ? 'Kích hoạt' : 'Vô hiệu hóa'} tài khoản thành công`,
       data: {
         id: account.id,
         status: account.status

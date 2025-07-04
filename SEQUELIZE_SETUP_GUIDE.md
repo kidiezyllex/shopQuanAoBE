@@ -59,7 +59,7 @@ File `config/database.json`:
   "development": {
     "username": "root",
     "password": null,
-    "database": "shopQuanAoDB",
+    "database": "allwear2DB",
     "host": "127.0.0.1",
     "dialect": "mysql",
     "port": 3306
@@ -79,7 +79,7 @@ const db = require('./src/sequelize-models/index.cjs');
 // Tạo brand mới
 const brand = await db.Brand.create({
   name: 'Nike',
-  status: 'HOAT_DONG'
+  status: 'ACTIVE'
 });
 
 // Query với associations

@@ -1024,7 +1024,7 @@ export const createPOSOrder = async (req, res) => {
           phoneNumber: '0000000000',
           password: 'defaultpassword',
           role: 'CUSTOMER',
-          status: 'HOAT_DONG'
+          status: 'ACTIVE'
         });
       }
       
@@ -1054,7 +1054,7 @@ export const createPOSOrder = async (req, res) => {
           phoneNumber: '0000000000',
           password: 'defaultpassword',
           role: 'CUSTOMER',
-          status: 'HOAT_DONG'
+          status: 'ACTIVE'
         });
       }
       

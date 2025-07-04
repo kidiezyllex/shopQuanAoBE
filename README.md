@@ -54,7 +54,7 @@
       "description": "string",
       "weight": "number",
       "variants": [...],
-      "status": "HOAT_DONG",
+      "status": "ACTIVE",
       "createdAt": "date",
       "updatedAt": "date"
     }
@@ -73,7 +73,7 @@
   - `size` (string, optional): Lọc theo kích cỡ
   - `minPrice` (number, optional): Giá thấp nhất
   - `maxPrice` (number, optional): Giá cao nhất
-  - `status` (string, optional): Trạng thái (HOAT_DONG/KHONG_HOAT_DONG)
+  - `status` (string, optional): Trạng thái (ACTIVE/INACTIVE)
   - `page` (number, optional): Số trang
   - `limit` (number, optional): Số lượng sản phẩm mỗi trang
 - **Response**:
@@ -189,7 +189,7 @@
 - **Payload**:
   ```json
   {
-    "status": "HOAT_DONG | KHONG_HOAT_DONG"
+    "status": "ACTIVE | INACTIVE"
   }
   ```
 - **Response**:
@@ -269,7 +269,7 @@
     "endDate": "date",
     "minOrderValue": "number",
     "maxDiscount": "number",
-    "status": "HOAT_DONG | KHONG_HOAT_DONG"
+    "status": "ACTIVE | INACTIVE"
   }
   ```
 - **Response**:
@@ -368,7 +368,7 @@
     "endDate": "date",
     "minOrderValue": "number",
     "maxDiscount": "number",
-    "status": "HOAT_DONG | KHONG_HOAT_DONG"
+    "status": "ACTIVE | INACTIVE"
   }
   ```
 - **Response**: (Tương tự response lấy chi tiết voucher)
@@ -464,7 +464,7 @@
           "endDate": "date",
           "minOrderValue": "number",
           "maxDiscount": "number",
-          "status": "HOAT_DONG"
+          "status": "ACTIVE"
         }
       ],
       "pagination": {
@@ -505,7 +505,7 @@
       "products": ["string"],
       "startDate": "date",
       "endDate": "date",
-      "status": "HOAT_DONG",
+      "status": "ACTIVE",
       "createdAt": "date",
       "updatedAt": "date"
     }
@@ -584,7 +584,7 @@
     "products": ["string"],
     "startDate": "date",
     "endDate": "date",
-    "status": "HOAT_DONG | KHONG_HOAT_DONG"
+    "status": "ACTIVE | INACTIVE"
   }
   ```
 - **Response**: (Tương tự response lấy chi tiết khuyến mãi)
@@ -1489,7 +1489,7 @@
     "birthday": "date",
     "citizenId": "string",
     "avatar": "string",
-    "status": "HOAT_DONG | KHONG_HOAT_DONG"
+    "status": "ACTIVE | INACTIVE"
   }
   ```
 - **Response**: (Tương tự response lấy chi tiết tài khoản)
@@ -1500,7 +1500,7 @@
 - **Payload**:
   ```json
   {
-    "status": "HOAT_DONG | KHONG_HOAT_DONG"
+    "status": "ACTIVE | INACTIVE"
   }
   ```
 - **Response**:
@@ -1868,7 +1868,7 @@ Các API quản lý thuộc tính sản phẩm bao gồm các thuộc tính như
 - **Route**: `/api/attributes/brands`
 - **Method**: GET
 - **Request Params**:
-  - `status` (string, optional): Lọc theo trạng thái (HOAT_DONG/KHONG_HOAT_DONG)
+  - `status` (string, optional): Lọc theo trạng thái (ACTIVE/INACTIVE)
 - **Response**:
   ```json
   {
@@ -1877,7 +1877,7 @@ Các API quản lý thuộc tính sản phẩm bao gồm các thuộc tính như
       {
         "_id": "60d21b4667d0d8992e610c85",
         "name": "Nike",
-        "status": "HOAT_DONG",
+        "status": "ACTIVE",
         "createdAt": "2023-06-22T14:25:32.952Z",
         "updatedAt": "2023-06-22T14:25:32.952Z"
       }
@@ -1893,7 +1893,7 @@ Các API quản lý thuộc tính sản phẩm bao gồm các thuộc tính như
   ```json
   {
     "name": "Nike",
-    "status": "HOAT_DONG"
+    "status": "ACTIVE"
   }
   ```
 - **Response**:
@@ -1903,7 +1903,7 @@ Các API quản lý thuộc tính sản phẩm bao gồm các thuộc tính như
     "data": {
       "_id": "60d21b4667d0d8992e610c85",
       "name": "Nike",
-      "status": "HOAT_DONG",
+      "status": "ACTIVE",
       "createdAt": "2023-06-22T14:25:32.952Z",
       "updatedAt": "2023-06-22T14:25:32.952Z"
     },
@@ -1921,7 +1921,7 @@ Các API quản lý thuộc tính sản phẩm bao gồm các thuộc tính như
     "data": {
       "_id": "60d21b4667d0d8992e610c85",
       "name": "Nike",
-      "status": "HOAT_DONG",
+      "status": "ACTIVE",
       "createdAt": "2023-06-22T14:25:32.952Z",
       "updatedAt": "2023-06-22T14:25:32.952Z"
     },
@@ -1936,7 +1936,7 @@ Các API quản lý thuộc tính sản phẩm bao gồm các thuộc tính như
   ```json
   {
     "name": "Nike Updated",
-    "status": "HOAT_DONG"
+    "status": "ACTIVE"
   }
   ```
 - **Response**:
@@ -1946,7 +1946,7 @@ Các API quản lý thuộc tính sản phẩm bao gồm các thuộc tính như
     "data": {
       "_id": "60d21b4667d0d8992e610c85",
       "name": "Nike Updated",
-      "status": "HOAT_DONG",
+      "status": "ACTIVE",
       "createdAt": "2023-06-22T14:25:32.952Z",
       "updatedAt": "2023-06-22T15:30:45.123Z"
     },
@@ -1979,7 +1979,7 @@ Tương tự như quản lý thương hiệu, nhưng sử dụng endpoint `/api/
 - **Route**: `/api/attributes/colors`
 - **Method**: GET
 - **Request Params**:
-  - `status` (string, optional): Lọc theo trạng thái (HOAT_DONG/KHONG_HOAT_DONG)
+  - `status` (string, optional): Lọc theo trạng thái (ACTIVE/INACTIVE)
 
 #### 9.4.2. Tạo màu sắc mới
 - **Route**: `/api/attributes/colors`
@@ -1989,7 +1989,7 @@ Tương tự như quản lý thương hiệu, nhưng sử dụng endpoint `/api/
   {
     "name": "Red",
     "code": "#FF0000",
-    "status": "HOAT_DONG"
+    "status": "ACTIVE"
   }
   ```
 
@@ -2005,7 +2005,7 @@ Tương tự như quản lý thương hiệu, nhưng sử dụng endpoint `/api/
   {
     "name": "Dark Red",
     "code": "#8B0000",
-    "status": "HOAT_DONG"
+    "status": "ACTIVE"
   }
   ```
 
@@ -2019,7 +2019,7 @@ Tương tự như quản lý thương hiệu, nhưng sử dụng endpoint `/api/
 - **Route**: `/api/attributes/sizes`
 - **Method**: GET
 - **Request Params**:
-  - `status` (string, optional): Lọc theo trạng thái (HOAT_DONG/KHONG_HOAT_DONG)
+  - `status` (string, optional): Lọc theo trạng thái (ACTIVE/INACTIVE)
 
 #### 9.5.2. Tạo kích thước mới
 - **Route**: `/api/attributes/sizes`
@@ -2028,7 +2028,7 @@ Tương tự như quản lý thương hiệu, nhưng sử dụng endpoint `/api/
   ```json
   {
     "value": 42,
-    "status": "HOAT_DONG"
+    "status": "ACTIVE"
   }
   ```
 
@@ -2043,7 +2043,7 @@ Tương tự như quản lý thương hiệu, nhưng sử dụng endpoint `/api/
   ```json
   {
     "value": 43,
-    "status": "HOAT_DONG"
+    "status": "ACTIVE"
   }
   ```
 

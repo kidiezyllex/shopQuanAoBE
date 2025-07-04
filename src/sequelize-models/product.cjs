@@ -71,8 +71,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     status: {
-      type: DataTypes.ENUM('HOAT_DONG', 'KHONG_HOAT_DONG'),
-      defaultValue: 'HOAT_DONG'
+      type: DataTypes.ENUM('ACTIVE', 'INACTIVE'),
+      defaultValue: 'ACTIVE'
     }
   }, {
     sequelize,

@@ -17,7 +17,7 @@ import { db } from '../config/database.js';
  *           description: The brand name
  *         status:
  *           type: string
- *           enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *           enum: [ACTIVE, INACTIVE]
  *           description: The brand status
  *         createdAt:
  *           type: string
@@ -40,7 +40,7 @@ import { db } from '../config/database.js';
  *           description: The category name
  *         status:
  *           type: string
- *           enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *           enum: [ACTIVE, INACTIVE]
  *           description: The category status
  *         createdAt:
  *           type: string
@@ -63,7 +63,7 @@ import { db } from '../config/database.js';
  *           description: The material name
  *         status:
  *           type: string
- *           enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *           enum: [ACTIVE, INACTIVE]
  *           description: The material status
  *         createdAt:
  *           type: string
@@ -90,7 +90,7 @@ import { db } from '../config/database.js';
  *           description: The color code (hex)
  *         status:
  *           type: string
- *           enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *           enum: [ACTIVE, INACTIVE]
  *           description: The color status
  *         createdAt:
  *           type: string
@@ -113,7 +113,7 @@ import { db } from '../config/database.js';
  *           description: The size value
  *         status:
  *           type: string
- *           enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *           enum: [ACTIVE, INACTIVE]
  *           description: The size status
  *         createdAt:
  *           type: string

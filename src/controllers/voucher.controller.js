@@ -58,7 +58,7 @@ export const createVoucher = async (req, res) => {
       endDate,
       minOrderValue: minOrderValue || 0,
       maxDiscount,
-      status: status || 'HOAT_DONG'
+      status: status || 'ACTIVE'
     });
 
     return res.status(201).json({

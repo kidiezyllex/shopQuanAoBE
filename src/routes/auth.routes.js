@@ -221,7 +221,7 @@ router.post('/register', register);
  *                       type: string
  *                     status:
  *                       type: string
- *                       enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *                       enum: [ACTIVE, INACTIVE]
  *                     addresses:
  *                       type: array
  *                       items:
@@ -622,7 +622,7 @@ router.put('/address/:addressId/default', protect, setDefaultAddress);
  *           enum: [CUSTOMER, ADMIN, STAFF]
  *         status:
  *           type: string
- *           enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *           enum: [ACTIVE, INACTIVE]
  *         addresses:
  *           type: array
  *           items:

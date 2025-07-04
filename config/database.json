@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": null,
-    "database": "shopQuanAoDB",
+    "database": "allwear2DB",
     "host": "127.0.0.1",
     "dialect": "mysql",
     "port": 3306,
@@ -16,7 +16,7 @@
   "test": {
     "username": "root",
     "password": null,
-    "database": "shopQuanAoDB_test",
+    "database": "allwear2DB_test",
     "host": "127.0.0.1",
     "dialect": "mysql",
     "port": 3306,
@@ -30,7 +30,7 @@
   "production": {
     "username": "root",
     "password": null,
-    "database": "shopQuanAoDB",
+    "database": "allwear2DB",
     "host": "127.0.0.1",
     "dialect": "mysql",
     "port": 3306,

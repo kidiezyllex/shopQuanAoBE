@@ -47,7 +47,7 @@ module.exports = {
         avatar: null,
         role: 'ADMIN',
         citizenId: '123456789012',
-        status: 'HOAT_DONG',
+        status: 'ACTIVE',
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -62,7 +62,7 @@ module.exports = {
         avatar: null,
         role: 'CUSTOMER',
         citizenId: '987654321098',
-        status: 'HOAT_DONG',
+        status: 'ACTIVE',
         createdAt: new Date(),
         updatedAt: new Date()
       }

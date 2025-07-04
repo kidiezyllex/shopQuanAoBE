@@ -1,0 +1,177 @@
+-- Tắt kiểm tra khóa ngoại
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- Insert dữ liệu vào bảng accounts
+INSERT INTO `accounts` (`id`, `code`, `fullName`, `phoneNumber`, `email`, `password`, `birthday`, `gender`, `avatar`, `role`, `citizenId`, `status`, `createdAt`, `updatedAt`) VALUES
+(1, 'CUS000125', 'Nguyễn Văn A', NULL, 'test@example.com', '$2b$10$k1Duinqe0uo8e0sySodh4egEk1M0mmqm2ZadxU0JDW7T/A/Y6Dji.', NULL, NULL, NULL, 'CUSTOMER', NULL, 'ACTIVE', '2025-06-15 21:45:03', '2025-06-15 21:45:03'),
+(4, 'ADM000125', 'Administrator', '0987654321', 'admin@gmail.com', '$2b$10$LpHjwadcp/PDm7WCUDAUCOlZ8p/xroBjN73G6b1ENZBg8ihq6Mcb.', '1990-01-01 00:00:00', 1, NULL, 'ADMIN', '123456789012', 'ACTIVE', '2025-06-16 15:19:56', '2025-06-16 15:19:56'),
+(5, 'CUS000225', 'Customer User', '0123456789', 'customer@gmail.com', '$2b$10$LjVsQpHvxvYmpkbFJesAeOLjcAU/39/cjO67QsSWRxHA9uVIpXL6m', '1995-05-15 00:00:00', 0, NULL, 'CUSTOMER', '987654321098', 'ACTIVE', '2025-06-16 15:19:56', '2025-06-16 15:19:56'),
+(6, 'CUS000325', 'Khách hàng tại quầy', '0000000000', 'guest@pos.local', '$2b$10$Nrgo7KGcOIykAAR14xa3oeJuJLHvL0updmAyz.Z1UyeF1R03lkPTC', NULL, NULL, NULL, 'CUSTOMER', NULL, 'ACTIVE', '2025-06-18 11:24:33', '2025-06-18 11:24:33');
+
+-- Insert dữ liệu vào bảng brands
+INSERT INTO `brands` (`id`, `name`, `status`, `createdAt`, `updatedAt`) VALUES
+(1, 'Uniqlo', 'ACTIVE', '2025-06-15 21:45:02', '2025-06-15 21:45:02'),
+(2, 'Zara', 'ACTIVE', '2025-06-17 07:32:10', '2025-06-17 07:32:23'),
+(3, 'Gucci', 'ACTIVE', '2025-06-18 23:25:36', '2025-06-18 23:25:36'),
+(4, 'Louis Vuitton', 'ACTIVE', '2025-06-18 23:25:42', '2025-06-18 23:25:42'),
+(5, 'Chanel', 'ACTIVE', '2025-06-18 23:25:50', '2025-06-18 23:25:50'),
+(6, 'Dior', 'ACTIVE', '2025-06-18 23:25:56', '2025-06-18 23:25:56'),
+(7, 'Prada', 'ACTIVE', '2025-06-18 23:26:02', '2025-06-18 23:26:02'),
+(8, 'Balenciaga', 'ACTIVE', '2025-06-18 23:26:08', '2025-06-18 23:26:08');
+
+-- Insert dữ liệu vào bảng categories
+INSERT INTO `categories` (`id`, `name`, `status`, `createdAt`, `updatedAt`) VALUES
+(1, 'Áo thun nam', 'ACTIVE', '2025-06-15 21:45:02', '2025-06-15 21:45:02'),
+(2, 'Áo khoác nam', 'ACTIVE', '2025-06-17 07:29:18', '2025-06-17 07:29:18');
+
+-- Insert dữ liệu vào bảng colors
+INSERT INTO `colors` (`id`, `name`, `code`, `status`, `createdAt`, `updatedAt`) VALUES
+(1, 'Đỏ', '#FF0000', 'ACTIVE', '2025-06-15 21:45:03', '2025-06-15 21:45:03'),
+(3, 'Purple Heart', '#6158da', 'ACTIVE', '2025-06-17 01:14:45', '2025-06-17 01:14:45'),
+(4, 'Beaver', '#ac766e', 'ACTIVE', '2025-06-17 01:14:50', '2025-06-17 01:14:50'),
+(5, 'Eggplant', '#65415c', 'ACTIVE', '2025-06-17 01:45:44', '2025-06-17 01:45:44'),
+(6, 'Tropical Rain Forest', '#26614c', 'ACTIVE', '2025-06-17 01:46:03', '2025-06-17 01:46:03');
+
+-- Insert dữ liệu vào bảng materials
+INSERT INTO `materials` (`id`, `name`, `status`, `createdAt`, `updatedAt`) VALUES
+(1, 'Da thật', 'ACTIVE', '2025-06-15 21:45:03', '2025-06-15 21:45:03'),
+(3, 'Polyester', 'ACTIVE', '2025-06-17 07:24:47', '2025-06-17 07:24:47'),
+(4, 'Cotton', 'ACTIVE', '2025-06-17 07:25:05', '2025-06-17 07:25:05');
+
+-- Insert dữ liệu vào bảng sizes
+INSERT INTO `sizes` (`id`, `value`, `status`, `createdAt`, `updatedAt`) VALUES
+(1, 34.0, 'ACTIVE', '2025-06-15 21:45:03', '2025-06-15 21:45:03'),
+(3, 36.0, 'ACTIVE', '2025-06-16 23:26:08', '2025-06-16 23:26:08'),
+(4, 38.0, 'ACTIVE', '2025-06-17 00:48:57', '2025-06-17 00:48:57');
+
+-- Insert dữ liệu vào bảng vouchers
+INSERT INTO `vouchers` (`id`, `code`, `name`, `type`, `value`, `quantity`, `usedCount`, `startDate`, `endDate`, `minOrderValue`, `maxDiscount`, `status`, `createdAt`, `updatedAt`) VALUES
+(1, 'FNPU2008', 'Voucher FNPU2008', 'PERCENTAGE', 10.00, 50, 0, '2025-06-16 00:00:00', '2025-07-25 00:00:00', 200000.00, 30000.00, 'ACTIVE', '2025-06-17 23:33:27', '2025-06-17 23:33:27'),
+(2, 'KWJT1409', 'Voucher KWJT1409', 'FIXED_AMOUNT', 20000.00, 40, 2, '2025-06-17 00:00:00', '2025-07-29 00:00:00', 200000.00, NULL, 'ACTIVE', '2025-06-17 23:38:32', '2025-06-19 12:41:11');
+
+-- Insert dữ liệu vào bảng products
+INSERT INTO `products` (`id`, `code`, `name`, `brandId`, `categoryId`, `materialId`, `description`, `weight`, `status`, `createdAt`, `updatedAt`) VALUES
+(1, 'PRD000001', 'Nike Air Max Test', 1, 1, 1, 'Giày thể thao cao cấp', 0.50, 'ACTIVE', '2025-06-15 21:45:03', '2025-06-15 21:45:03'),
+(7, 'PRD000003', 'DSW Dark Whisper Tee', 2, 1, 4, 'sfdsfdsfd', 497.00, 'ACTIVE', '2025-06-17 08:32:44', '2025-06-17 08:32:44'),
+(31, 'PRD000004', 'SP2', 1, 1, 4, 'ssds', 400.00, 'ACTIVE', '2025-06-17 09:11:48', '2025-06-17 09:11:48'),
+(32, 'PRD000005', 'DSW Hunter Hooded Bomber Jacket', 2, 2, 3, 'DSW Hunter Hooded Bomber Jacket', 1000.00, 'ACTIVE', '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(33, 'PRD000006', 'DSW Fleece Zip-Up Jacket', 1, 2, 1, 'DSW Fleece Zip-Up Jacket', 0.00, 'ACTIVE', '2025-06-18 03:34:27', '2025-06-18 03:34:27'),
+(34, 'PRD000007', 'DSW Crop Bomber Jacket Classy', 2, 2, 4, 'DSW Crop Bomber Jacket Classy', 0.00, 'ACTIVE', '2025-06-18 03:36:17', '2025-06-18 03:36:17');
+
+-- Insert dữ liệu vào bảng product_variants
+INSERT INTO `product_variants` (`id`, `productId`, `colorId`, `sizeId`, `price`, `stock`, `createdAt`, `updatedAt`) VALUES
+(1, 1, 1, 1, 2500000.00, 10, '2025-06-15 21:45:03', '2025-06-15 21:45:03'),
+(7, 7, 6, 3, 300000.00, 0, '2025-06-17 08:32:44', '2025-06-17 08:32:44'),
+(8, 31, 6, 4, 300000.00, 29, '2025-06-17 09:11:49', '2025-06-18 19:35:55'),
+(9, 32, 4, 1, 538000.00, 40, '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(10, 32, 1, 1, 538000.00, 9, '2025-06-18 03:24:05', '2025-06-30 00:46:03'),
+(11, 32, 5, 1, 538000.00, 10, '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(12, 32, 3, 1, 538000.00, 10, '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(13, 32, 6, 1, 538000.00, 10, '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(14, 32, 4, 3, 562000.00, 10, '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(15, 32, 1, 3, 562000.00, 10, '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(16, 32, 5, 3, 562000.00, 10, '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(17, 32, 3, 3, 562000.00, 10, '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(18, 32, 6, 3, 562000.00, 10, '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(19, 32, 4, 4, 585000.00, 10, '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(20, 32, 1, 4, 585000.00, 10, '2025-06-18 03:24:05', '2025-06-18 03:24:06'),
+(21, 32, 5, 4, 585000.00, 10, '2025-06-18 03:24:06', '2025-06-18 03:24:06'),
+(22, 32, 3, 4, 585000.00, 10, '2025-06-18 03:24:06', '2025-06-18 03:24:06'),
+(23, 32, 6, 4, 585000.00, 10, '2025-06-18 03:24:06', '2025-06-18 03:24:06'),
+(24, 33, 4, 1, 415000.00, 47, '2025-06-18 03:34:27', '2025-06-18 03:34:27'),
+(25, 33, 1, 1, 415000.00, 10, '2025-06-18 03:34:27', '2025-06-30 01:01:24'),
+(26, 33, 5, 1, 415000.00, 10, '2025-06-18 03:34:27', '2025-06-18 03:34:27'),
+(27, 33, 3, 1, 415000.00, 10, '2025-06-18 03:34:27', '2025-06-18 03:34:27'),
+(28, 33, 6, 1, 415000.00, 10, '2025-06-18 03:34:27', '2025-06-18 03:34:27'),
+(29, 33, 4, 3, 433000.00, 10, '2025-06-18 03:34:27', '2025-06-18 03:34:27'),
+(30, 33, 1, 3, 433000.00, 9, '2025-06-18 03:34:27', '2025-06-18 22:00:49'),
+(31, 33, 5, 3, 433000.00, 10, '2025-06-18 03:34:27', '2025-06-18 03:34:27'),
+(32, 33, 3, 3, 433000.00, 10, '2025-06-18 03:34:27', '2025-06-18 03:34:27'),
+(33, 33, 6, 3, 433000.00, 10, '2025-06-18 03:34:27', '2025-06-18 03:34:27'),
+(34, 33, 4, 4, 451000.00, 10, '2025-06-18 03:34:27', '2025-06-18 03:34:27'),
+(35, 33, 1, 4, 451000.00, 10, '2025-06-18 03:34:27', '2025-06-18 03:34:27'),
+(36, 33, 5, 4, 451000.00, 10, '2025-06-18 03:34:27', '2025-06-18 03:34:27'),
+(37, 33, 3, 4, 451000.00, 10, '2025-06-18 03:34:27', '2025-06-18 03:34:27'),
+(38, 33, 6, 4, 451000.00, 9, '2025-06-18 03:34:27', '2025-06-19 02:10:12'),
+(39, 34, 4, 1, 483000.00, 0, '2025-06-18 03:36:17', '2025-06-18 03:36:17'),
+(40, 34, 1, 1, 483000.00, 2, '2025-06-18 03:36:17', '2025-06-30 01:02:20'),
+(41, 34, 5, 1, 483000.00, 6, '2025-06-18 03:36:17', '2025-06-18 19:35:55'),
+(42, 34, 3, 1, 483000.00, 10, '2025-06-18 03:36:17', '2025-06-18 03:36:17'),
+(43, 34, 6, 1, 483000.00, 10, '2025-06-18 03:36:17', '2025-06-18 03:36:17'),
+(44, 34, 4, 3, 504000.00, 10, '2025-06-18 03:36:17', '2025-06-18 03:36:17'),
+(45, 34, 1, 3, 504000.00, 3, '2025-06-18 03:36:17', '2025-06-19 11:44:09'),
+(46, 34, 5, 3, 504000.00, 10, '2025-06-18 03:36:17', '2025-06-18 03:36:17'),
+(47, 34, 3, 3, 504000.00, 10, '2025-06-18 03:36:17', '2025-06-18 03:36:17'),
+(48, 34, 6, 3, 504000.00, 9, '2025-06-18 03:36:17', '2025-06-18 19:41:44'),
+(49, 34, 4, 4, 525000.00, 10, '2025-06-18 03:36:17', '2025-06-18 03:36:17'),
+(50, 34, 1, 4, 525000.00, 9, '2025-06-18 03:36:17', '2025-06-19 02:10:12'),
+(51, 34, 5, 4, 525000.00, 10, '2025-06-18 03:36:17', '2025-06-18 03:36:17'),
+(52, 34, 3, 4, 525000.00, 10, '2025-06-18 03:36:17', '2025-06-18 03:36:17'),
+(53, 34, 6, 4, 525000.00, 10, '2025-06-18 03:36:17', '2025-06-18 03:36:17');
+
+-- Insert dữ liệu vào bảng product_variant_images
+INSERT INTO `product_variant_images` (`id`, `variantId`, `imageUrl`, `createdAt`, `updatedAt`) VALUES
+(2, 7, 'https://res.cloudinary.com/drqbhj6ft/image/upload/v1750149193/shopquanao/4/images/shopquanao/4/images/1a61271f-2263-4a11-aa22-1643f41ace6c.jpg', '2025-06-17 08:32:44', '2025-06-17 08:32:44'),
+(3, 8, 'https://res.cloudinary.com/drqbhj6ft/image/upload/v1750150665/shopquanao/4/images/shopquanao/4/images/8ef6361d-c5ce-44bf-82ce-b73bfb954a4c.jpg', '2025-06-17 09:11:49', '2025-06-17 09:11:49'),
+(4, 9, 'https://res.cloudinary.com/drqbhj6ft/image/upload/v1750217097/shopquanao/4/images/shopquanao/4/images/5c4dfdc7-6aa8-4415-9edd-a6f77dbcbd0e.jpg', '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(5, 10, 'https://res.cloudinary.com/drqbhj6ft/image/upload/v1750217097/shopquanao/4/images/shopquanao/4/images/5c4dfdc7-6aa8-4415-9edd-a6f77dbcbd0e.jpg', '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(6, 11, 'https://res.cloudinary.com/drqbhj6ft/image/upload/v1750217097/shopquanao/4/images/shopquanao/4/images/5c4dfdc7-6aa8-4415-9edd-a6f77dbcbd0e.jpg', '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(7, 12, 'https://res.cloudinary.com/drqbhj6ft/image/upload/v1750217097/shopquanao/4/images/shopquanao/4/images/5c4dfdc7-6aa8-4415-9edd-a6f77dbcbd0e.jpg', '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(8, 13, 'https://res.cloudinary.com/drqbhj6ft/image/upload/v1750217097/shopquanao/4/images/shopquanao/4/images/5c4dfdc7-6aa8-4415-9edd-a6f77dbcbd0e.jpg', '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(9, 14, 'https://res.cloudinary.com/drqbhj6ft/image/upload/v1750217097/shopquanao/4/images/shopquanao/4/images/5c4dfdc7-6aa8-4415-9edd-a6f77dbcbd0e.jpg', '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(10, 15, 'https://res.cloudinary.com/drqbhj6ft/image/upload/v1750217097/shopquanao/4/images/shopquanao/4/images/5c4dfdc7-6aa8-4415-9edd-a6f77dbcbd0e.jpg', '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(11, 16, 'https://res.cloudinary.com/drqbhj6ft/image/upload/v1750217097/shopquanao/4/images/shopquanao/4/images/5c4dfdc7-6aa8-4415-9edd-a6f77dbcbd0e.jpg', '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(12, 17, 'https://res.cloudinary.com/drqbhj6ft/image/upload/v1750217097/shopquanao/4/images/shopquanao/4/images/5c4dfdc7-6aa8-4415-9edd-a6f77dbcbd0e.jpg', '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(13, 18, 'https://res.cloudinary.com/drqbhj6ft/image/upload/v1750217097/shopquanao/4/images/shopquanao/4/images/5c4dfdc7-6aa8-4415-9edd-a6f77dbcbd0e.jpg', '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(14, 19, 'https://res.cloudinary.com/drqbhj6ft/image/upload/v1750217097/shopquanao/4/images/shopquanao/4/images/5c4dfdc7-6aa8-4415-9edd-a6f77dbcbd0e.jpg', '2025-06-18 03:24:05', '2025-06-18 03:24:05'),
+(15, 20, 'https://res.cloudinary.com/drqbhj6ft/image/upload/v1750217097/shopquanao/4/images/shopquanao/4/images/5c4dfdc7-6aa8-4415-9edd-a6f77dbcbd0e.jpg', '2025-06-18 03:24:06', '2025-06-18 03:24:06'),
+(16, 21, 'https://res.cloudinary.com/drqbhj6ft/image/upload/v1750217097/shopquanao/4/images/shopquanao/4/images/5c4dfdc7-6aa8-4415-9edd-a6f77dbcbd0e.jpg', '2025-06-18 03:24:06', '2025-06-18 03:24:06'),
+(17, 22, 'https://res.cloudinary.com/drqbhj6ft/image/upload/v1750217097/shopquanao/4/images/shopquanao/4/images/5c4dfdc7-6aa8-4415-9edd-a6f77dbcbd0e.jpg', '2025-06-18 03:24:06', '2025-06-18 03:24:06'),
+(18, 23, 'https://res.cloudinary.com/drqbhj6ft/image/upload/v1750217097/shopquanao/4/images/shopquanao/4/images/5c4dfdc7-6aa8-4415-9edd-a6f77dbcbd0e.jpg', '2025-06-18 03:24:06', '2025-06-18 03:24:06');
+
+-- Insert dữ liệu vào bảng notifications
+INSERT INTO `notifications` (`id`, `accountId`, `title`, `message`, `type`, `isRead`, `createdAt`, `updatedAt`) VALUES
+(1, 1, 'Voucher mới: Voucher KWJT1409', 'Sử dụng mã KWJT1409 để được giảm giá!', 'VOUCHER', 0, '2025-06-19 01:29:22', '2025-06-19 01:29:22'),
+(2, 5, 'Voucher mới: Voucher KWJT1409', 'Sử dụng mã KWJT1409 để được giảm giá!', 'VOUCHER', 0, '2025-06-19 01:29:22', '2025-06-19 01:29:22'),
+(3, 6, 'Voucher mới: Voucher KWJT1409', 'Sử dụng mã KWJT1409 để được giảm giá!', 'VOUCHER', 0, '2025-06-19 01:29:22', '2025-06-19 01:29:22'),
+(4, 1, 'Voucher mới: Voucher FNPU2008', 'Sử dụng mã FNPU2008 để được giảm giá!', 'VOUCHER', 0, '2025-06-19 01:29:25', '2025-06-19 01:29:25'),
+(5, 5, 'Voucher mới: Voucher FNPU2008', 'Sử dụng mã FNPU2008 để được giảm giá!', 'VOUCHER', 0, '2025-06-19 01:29:25', '2025-06-19 01:29:25'),
+(6, 6, 'Voucher mới: Voucher FNPU2008', 'Sử dụng mã FNPU2008 để được giảm giá!', 'VOUCHER', 0, '2025-06-19 01:29:25', '2025-06-19 01:29:25');
+
+-- Insert dữ liệu vào bảng promotions
+INSERT INTO `promotions` (`id`, `name`, `description`, `discountPercent`, `productIds`, `startDate`, `endDate`, `status`, `createdAt`, `updatedAt`) VALUES
+(3, 'Giảm giá cuối tháng 6', 'Giảm giá cuối tháng 6', 11.00, '[34,33,32]', '2025-06-19 15:29:00', '2025-06-30 12:29:00', 'ACTIVE', '2025-06-19 12:29:43', '2025-06-19 12:29:43'),
+(4, 'Đơtj khuyến mãi 2', 'Đơtj khuyến mãi 2', 8.00, '[]', '2025-06-22 12:45:00', '2025-06-30 12:45:00', 'ACTIVE', '2025-06-19 12:45:25', '2025-06-19 12:45:25'),
+(5, 'Mã giảm giá áp riêng', '', 15.00, '[34]', '2025-06-20 12:47:00', '2025-06-30 12:47:00', 'ACTIVE', '2025-06-19 12:47:32', '2025-06-19 12:47:32'),
+(6, 'Chiến dịch 333', 'ưewewe', 3.00, '[]', '2025-06-19 13:05:00', '2025-06-30 13:02:00', 'ACTIVE', '2025-06-19 13:04:55', '2025-06-19 13:04:55'),
+(10, 'Chiến dịch 2', 'sdsdsd', 10.00, '[]', '2025-06-30 05:32:00', '2025-07-03 17:32:00', 'ACTIVE', '2025-06-30 00:32:32', '2025-06-30 00:32:32'),
+(11, 'Chiến dịch 2', 'fdfdfd', 9.00, '[]', '2025-06-30 07:40:00', '2025-07-02 07:39:00', 'ACTIVE', '2025-06-30 00:39:37', '2025-06-30 00:39:37'),
+(12, 'Chiến dịch DBP', 'dfdfdfd', 3.00, '[]', '2025-06-30 08:07:00', '2025-07-05 08:06:00', 'ACTIVE', '2025-06-30 01:06:55', '2025-06-30 01:06:55');
+
+-- Insert dữ liệu vào bảng orders
+INSERT INTO `orders` (`id`, `code`, `customerId`, `staffId`, `voucherId`, `subTotal`, `discount`, `total`, `shippingName`, `shippingPhoneNumber`, `shippingProvinceId`, `shippingDistrictId`, `shippingWardId`, `shippingSpecificAddress`, `paymentMethod`, `paymentStatus`, `orderStatus`, `createdAt`, `updatedAt`) VALUES
+(11, 'POS050049', 6, 4, NULL, 2449000.00, 0.00, 2449000.00, 'Khách hàng tại quầy', '0446736483', 'N/A', 'N/A', 'N/A', 'Tại quầy', 'BANK_TRANSFER', 'PAID', 'HOAN_THANH', '2025-06-18 22:00:49', '2025-06-18 22:00:49'),
+(12, 'POS065811', 6, 4, NULL, 504000.00, 0.00, 504000.00, 'Customer User', '0123456789', 'N/A', 'N/A', 'N/A', 'Tại quầy', 'BANK_TRANSFER', 'PAID', 'HOAN_THANH', '2025-06-18 23:58:11', '2025-06-18 23:58:11'),
+(13, 'DH25060003', 4, NULL, NULL, 2415000.00, 0.00, 2535750.00, NULL, NULL, NULL, NULL, NULL, NULL, 'COD', 'PENDING', 'DA_GIAO_HANG', '2025-06-19 01:16:00', '2025-06-19 01:44:32'),
+(14, 'DH25060004', 5, NULL, NULL, 976000.00, 0.00, 1024800.00, NULL, NULL, NULL, NULL, NULL, NULL, 'COD', 'PENDING', 'CHO_XAC_NHAN', '2025-06-19 02:10:12', '2025-06-19 02:10:12'),
+(15, 'POS184409', 6, 4, 2, 1008000.00, 20000.00, 988000.00, 'Khách hàng tại quầy', '0000000000', 'N/A', 'N/A', 'N/A', 'Tại quầy', 'BANK_TRANSFER', 'PAID', 'HOAN_THANH', '2025-06-19 11:44:09', '2025-06-19 11:44:09'),
+(16, 'POS194111', 6, 4, 2, 429870.00, 20000.00, 409870.00, 'Khách hàng tại quầy', '0000000000', 'N/A', 'N/A', 'N/A', 'Tại quầy', 'BANK_TRANSFER', 'PAID', 'HOAN_THANH', '2025-06-19 12:41:11', '2025-06-19 12:41:11'),
+(17, 'DH2025-362950', 5, NULL, NULL, 478820.00, 0.00, 532761.00, 'Customer User', '0123456789', NULL, NULL, NULL, 'fdfdf, , , , Việt Nam', 'BANK_TRANSFER', 'PENDING', 'CHO_XAC_NHAN', '2025-06-30 00:46:02', '2025-06-30 00:46:02'),
+(19, 'DH2025-340235', 5, NULL, NULL, 410550.00, 0.00, 461077.50, 'Customer User', '0123456789', '4', '42', '1300', 'Phú Đô Milan, Xã Vĩnh Quang, Huyện Bảo Lâm, Tỉnh Cao Bằng, Việt Nam', 'BANK_TRANSFER', 'PAID', 'CHO_XAC_NHAN', '2025-06-30 01:02:20', '2025-06-30 01:02:20');
+
+-- Insert dữ liệu vào bảng order_items
+INSERT INTO `order_items` (`id`, `orderId`, `variantId`, `quantity`, `price`, `createdAt`, `updatedAt`) VALUES
+(11, 11, 45, 4, 504000.00, '2025-06-18 22:00:49', '2025-06-18 22:00:49'),
+(12, 11, 30, 1, 433000.00, '2025-06-18 22:00:49', '2025-06-18 22:00:49'),
+(13, 12, 45, 1, 504000.00, '2025-06-18 23:58:11', '2025-06-18 23:58:11'),
+(14, 13, 40, 5, 483000.00, '2025-06-19 01:16:00', '2025-06-19 01:16:00'),
+(15, 14, 38, 1, 451000.00, '2025-06-19 02:10:12', '2025-06-19 02:10:12'),
+(16, 14, 50, 1, 525000.00, '2025-06-19 02:10:12', '2025-06-19 02:10:12'),
+(17, 15, 45, 2, 504000.00, '2025-06-19 11:44:09', '2025-06-19 11:44:09'),
+(18, 16, 40, 1, 429870.00, '2025-06-19 12:41:11', '2025-06-19 12:41:11'),
+(19, 17, 10, 1, 478820.00, '2025-06-30 00:46:02', '2025-06-30 00:46:02'),
+(21, 19, 40, 1, 410550.00, '2025-06-30 01:02:20', '2025-06-30 01:02:20');
+
+-- Bật lại kiểm tra khóa ngoại
+SET FOREIGN_KEY_CHECKS = 1;
+

@@ -139,7 +139,7 @@ export const createProduct = async (req, res) => {
       materialId: materialDoc.id,
       description,
       weight,
-      status: 'HOAT_DONG'
+      status: 'ACTIVE'
     });
 
     // Xử lý variants
@@ -555,7 +555,7 @@ export const updateProduct = async (req, res) => {
           sizeId: variant.sizeId,
           price: variant.price,
           quantity: variant.quantity || variant.stock || 0,
-          status: 'HOAT_DONG'
+          status: 'ACTIVE'
         });
 
         // Tạo images cho variant nếu có
@@ -664,7 +664,7 @@ export const updateProductStatus = async (req, res) => {
       });
     }
     
-    if (!status || !['HOAT_DONG', 'KHONG_HOAT_DONG'].includes(status)) {
+    if (!status || !['ACTIVE', 'INACTIVE'].includes(status)) {
       return res.status(400).json({
         success: false,
         message: 'Trạng thái không hợp lệ'
@@ -965,11 +965,11 @@ export const updateProductImages = async (req, res) => {
 export const getAllFilters = async (req, res) => {
   try {
     const [brands, categories, materials, colors, sizes] = await Promise.all([
-      db.Brand.findAll({ where: { status: 'HOAT_DONG' }, attributes: ['id', 'name'] }),
-      db.Category.findAll({ where: { status: 'HOAT_DONG' }, attributes: ['id', 'name'] }),
-      db.Material.findAll({ where: { status: 'HOAT_DONG' }, attributes: ['id', 'name'] }),
-      db.Color.findAll({ where: { status: 'HOAT_DONG' }, attributes: ['id', 'name', 'code'] }),
-      db.Size.findAll({ where: { status: 'HOAT_DONG' }, attributes: ['id', 'value'] })
+      db.Brand.findAll({ where: { status: 'ACTIVE' }, attributes: ['id', 'name'] }),
+      db.Category.findAll({ where: { status: 'ACTIVE' }, attributes: ['id', 'name'] }),
+      db.Material.findAll({ where: { status: 'ACTIVE' }, attributes: ['id', 'name'] }),
+      db.Color.findAll({ where: { status: 'ACTIVE' }, attributes: ['id', 'name', 'code'] }),
+      db.Size.findAll({ where: { status: 'ACTIVE' }, attributes: ['id', 'value'] })
     ]);
 
     return res.status(200).json({
