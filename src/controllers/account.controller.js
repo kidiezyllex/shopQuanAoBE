@@ -221,7 +221,7 @@ export const updateAccountStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
     
-    if (!['HOAT_DONG', 'KHONG_HOAT_DONG'].includes(status)) {
+    if (!['HOAT_DONG', 'INACTIVE'].includes(status)) {
       return res.status(400).json({
         success: false,
         message: 'Trạng thái không hợp lệ'

@@ -131,7 +131,7 @@ router.post('/', authenticate, authorizeAdmin, createProduct);
  *         name: status
  *         schema:
  *           type: string
- *           enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *           enum: [HOAT_DONG, INACTIVE]
  *         description: Trạng thái sản phẩm
  *       - in: query
  *         name: page
@@ -314,7 +314,7 @@ router.get('/:id', getProductById);
  *                         type: string
  *               status:
  *                 type: string
- *                 enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *                 enum: [HOAT_DONG, INACTIVE]
  *     responses:
  *       200:
  *         description: Cập nhật sản phẩm thành công
@@ -382,7 +382,7 @@ router.delete('/:id', authenticate, authorizeAdmin, deleteProduct);
  *             properties:
  *               status:
  *                 type: string
- *                 enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *                 enum: [HOAT_DONG, INACTIVE]
  *     responses:
  *       200:
  *         description: Cập nhật trạng thái sản phẩm thành công

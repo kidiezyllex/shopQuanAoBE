@@ -58,7 +58,7 @@ module.exports = {
         allowNull: false
       },
       status: {
-        type: Sequelize.ENUM('HOAT_DONG', 'KHONG_HOAT_DONG'),
+        type: Sequelize.ENUM('HOAT_DONG', 'INACTIVE'),
         defaultValue: 'HOAT_DONG'
       },
       createdAt: {

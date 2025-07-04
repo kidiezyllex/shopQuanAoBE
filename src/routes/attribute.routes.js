@@ -22,7 +22,7 @@ const router = express.Router();
  *         name: status
  *         schema:
  *           type: string
- *           enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *           enum: [HOAT_DONG, INACTIVE]
  *         description: Filter by status
  *     responses:
  *       200:
@@ -60,7 +60,7 @@ const router = express.Router();
  *                 type: string
  *               status:
  *                 type: string
- *                 enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *                 enum: [HOAT_DONG, INACTIVE]
  *     responses:
  *       201:
  *         description: Brand created successfully
@@ -118,7 +118,7 @@ router.route('/brands')
  *                 type: string
  *               status:
  *                 type: string
- *                 enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *                 enum: [HOAT_DONG, INACTIVE]
  *     responses:
  *       200:
  *         description: Brand updated successfully
@@ -175,7 +175,7 @@ router.route('/brands/:id')
  *         name: status
  *         schema:
  *           type: string
- *           enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *           enum: [HOAT_DONG, INACTIVE]
  *         description: Filter by status
  *     responses:
  *       200:
@@ -213,7 +213,7 @@ router.route('/brands/:id')
  *                 type: string
  *               status:
  *                 type: string
- *                 enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *                 enum: [HOAT_DONG, INACTIVE]
  *     responses:
  *       201:
  *         description: Category created successfully
@@ -271,7 +271,7 @@ router.route('/categories')
  *                 type: string
  *               status:
  *                 type: string
- *                 enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *                 enum: [HOAT_DONG, INACTIVE]
  *     responses:
  *       200:
  *         description: Category updated successfully
@@ -328,7 +328,7 @@ router.route('/categories/:id')
  *         name: status
  *         schema:
  *           type: string
- *           enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *           enum: [HOAT_DONG, INACTIVE]
  *         description: Filter by status
  *     responses:
  *       200:
@@ -366,7 +366,7 @@ router.route('/categories/:id')
  *                 type: string
  *               status:
  *                 type: string
- *                 enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *                 enum: [HOAT_DONG, INACTIVE]
  *     responses:
  *       201:
  *         description: Material created successfully
@@ -424,7 +424,7 @@ router.route('/materials')
  *                 type: string
  *               status:
  *                 type: string
- *                 enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *                 enum: [HOAT_DONG, INACTIVE]
  *     responses:
  *       200:
  *         description: Material updated successfully
@@ -481,7 +481,7 @@ router.route('/materials/:id')
  *         name: status
  *         schema:
  *           type: string
- *           enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *           enum: [HOAT_DONG, INACTIVE]
  *         description: Filter by status
  *     responses:
  *       200:
@@ -522,7 +522,7 @@ router.route('/materials/:id')
  *                 type: string
  *               status:
  *                 type: string
- *                 enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *                 enum: [HOAT_DONG, INACTIVE]
  *     responses:
  *       201:
  *         description: Color created successfully
@@ -582,7 +582,7 @@ router.route('/colors')
  *                 type: string
  *               status:
  *                 type: string
- *                 enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *                 enum: [HOAT_DONG, INACTIVE]
  *     responses:
  *       200:
  *         description: Color updated successfully
@@ -639,7 +639,7 @@ router.route('/colors/:id')
  *         name: status
  *         schema:
  *           type: string
- *           enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *           enum: [HOAT_DONG, INACTIVE]
  *         description: Filter by status
  *     responses:
  *       200:
@@ -677,7 +677,7 @@ router.route('/colors/:id')
  *                 type: number
  *               status:
  *                 type: string
- *                 enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *                 enum: [HOAT_DONG, INACTIVE]
  *     responses:
  *       201:
  *         description: Size created successfully
@@ -735,7 +735,7 @@ router.route('/sizes')
  *                 type: number
  *               status:
  *                 type: string
- *                 enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *                 enum: [HOAT_DONG, INACTIVE]
  *     responses:
  *       200:
  *         description: Size updated successfully

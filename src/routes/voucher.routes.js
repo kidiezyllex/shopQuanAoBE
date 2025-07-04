@@ -71,7 +71,7 @@ const router = express.Router();
  *                 description: Số tiền giảm tối đa (cho loại %)
  *               status:
  *                 type: string
- *                 enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *                 enum: [HOAT_DONG, INACTIVE]
  *                 default: HOAT_DONG
  *     responses:
  *       201:
@@ -108,7 +108,7 @@ router.post('/', authenticate, authorizeAdmin, createVoucher);
  *         name: status
  *         schema:
  *           type: string
- *           enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *           enum: [HOAT_DONG, INACTIVE]
  *         description: Lọc theo trạng thái
  *       - in: query
  *         name: startDate
@@ -217,7 +217,7 @@ router.get('/:id', authenticate, authorizeAdmin, getVoucherById);
  *                 description: Số tiền giảm tối đa (cho loại %)
  *               status:
  *                 type: string
- *                 enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *                 enum: [HOAT_DONG, INACTIVE]
  *     responses:
  *       200:
  *         description: Cập nhật voucher thành công

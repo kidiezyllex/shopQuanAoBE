@@ -35,7 +35,7 @@ const router = express.Router();
  *         name: status
  *         schema:
  *           type: string
- *         description: "Lọc theo trạng thái (HOAT_DONG, KHONG_HOAT_DONG)"
+ *         description: "Lọc theo trạng thái (HOAT_DONG, INACTIVE)"
  *       - in: query
  *         name: search
  *         schema:
@@ -398,7 +398,7 @@ router.get('/:id', protect, admin, getAccountById);
  *                 format: url
  *               status:
  *                 type: string
- *                 enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *                 enum: [HOAT_DONG, INACTIVE]
  *             example:
  *               fullName: "Admin Cập Nhật"
  *               email: "updated.email@example.com"
@@ -407,7 +407,7 @@ router.get('/:id', protect, admin, getAccountById);
  *               birthday: "1995-05-15"
  *               citizenId: "987654321012"
  *               avatar: "https://example.com/avatar_updated.jpg"
- *               status: "HOAT_DONG"
+ *               status: "ACTIVE"
  *     responses:
  *       200:
  *         description: "Cập nhật tài khoản thành công"
@@ -446,10 +446,10 @@ router.put('/:id', protect, admin, updateAccount);
  *             properties:
  *               status:
  *                 type: string
- *                 enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *                 enum: [HOAT_DONG, INACTIVE]
  *                 required: true
  *             example:
- *               status: "KHONG_HOAT_DONG"
+ *               status: "INACTIVE"
  *     responses:
  *       200:
  *         description: "Cập nhật trạng thái thành công"

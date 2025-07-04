@@ -664,7 +664,7 @@ export const updateProductStatus = async (req, res) => {
       });
     }
     
-    if (!status || !['HOAT_DONG', 'KHONG_HOAT_DONG'].includes(status)) {
+    if (!status || !['HOAT_DONG', 'INACTIVE'].includes(status)) {
       return res.status(400).json({
         success: false,
         message: 'Trạng thái không hợp lệ'

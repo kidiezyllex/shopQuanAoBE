@@ -73,7 +73,7 @@ router.post('/', authenticate, authorizeAdmin, createPromotion);
  *         name: status
  *         schema:
  *           type: string
- *           enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *           enum: [HOAT_DONG, INACTIVE]
  *       - in: query
  *         name: search
  *         schema:
@@ -175,7 +175,7 @@ router.get('/:id', authenticate, authorizeAdmin, getPromotionById);
  *                 format: date-time
  *               status:
  *                 type: string
- *                 enum: [HOAT_DONG, KHONG_HOAT_DONG]
+ *                 enum: [HOAT_DONG, INACTIVE]
  *     responses:
  *       200:
  *         description: Cập nhật khuyến mãi thành công
